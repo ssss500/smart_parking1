@@ -28,121 +28,143 @@ class _HomeScreen extends State<HomeScreen> {
         backgroundColor: Colors.lightBlue,
       ),
       drawer: const DrawerClass(),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Choose your slot",style: TextStyle(fontSize: 30),),
-          const SizedBox(
-            height: 100,
-          ),
-          Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 5,
-                    blurRadius: 7,
-                    offset: const Offset(0, 3),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Choose your slot",
+              style: TextStyle(fontSize: 30),
+            ),
+            const SizedBox(
+              height: 100,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 5,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3),
+                    )
+                  ]),
+              child: Row(
+                children: [
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Container(
+                    height: 100,
+                    width: 60,
+                    child: const Center(
+                        child: Text(
+                      "P1",
+                      style: TextStyle(fontSize: 40),
+                    )),
+                    color: Colors.green,
+                  ),
+                  const SizedBox(
+                    width: 60,
+                  ),
+                  Container(
+                    height: 100,
+                    width: 60,
+                    child: const Center(
+                        child: Text(
+                      "P2",
+                      style: TextStyle(fontSize: 40),
+                    )),
+                    color: Colors.red,
                   )
-                ]
+                ],
+              ),
             ),
-            child: Row(
-              children: [
-                const SizedBox(
-                  width: 20,
-                ),
-                Container(
-                  height: 100,
-                  width: 60,
-                  child: const Center(child: Text("P1",style: TextStyle(fontSize: 40),)),
-                  color: Colors.green,
-                ),
-                const SizedBox(
-                  width: 60,
-                ),
-                Container(
-                  height: 100,
-                   width: 60,
-                  child: const Center(child: Text("P2",style: TextStyle(fontSize: 40),)),
-                  color: Colors.red,
-                )
-              ],
-         ),
-          ),
-          const SizedBox(
-            height: 100,
-          ),
-          // ElevatedButton(onPressed: () {
-          //
-          // }, child: const Text("Book It")),
-          Center(
-            child: Row(
-              children: [
-                ElevatedButton(
-                    onPressed: () async {
-                      Navigator.of(context).pushNamed('Payment');
-                      var tableRef = ref.child("second garage");
-                      await tableRef
-                          .child("Slot 1")
-                          .once()
-                          .then((DataSnapshot snapshot) {
-                        if (snapshot.value == 1) {
-                          if (kDebugMode) {
-                            print('emp');
-                          }
-                        } else {
-                          if (kDebugMode) {
-                            print('not emp');
-                          }
-                        }
-                        if (kDebugMode) {
-                          print(snapshot.value);
-                        }
-                      });
-                    },
-                    child: const Text("Booking",style: TextStyle(fontSize: 40))),
-                ElevatedButton(onPressed: ()async{
-                  var tableRef = ref.child("second garage");
-                  await tableRef
-                      .child("gate")
-                      .once()
-                      .then((DataSnapshot snapshot) {
-                        if(snapshot.value==true){
-                          tableRef.update({'gate': false,});
-                        }else{
-                          tableRef.update({'gate': true,});
-                        }
-                  });
-                  // var gateValue = ref.child("second garage");
-                  // await gateValue.update(
-                  //     {
-                  //       'gate': true,
-                  //     }
-                  // );
-                  // gateValue.push();
-                }, child: const Text('update',style: TextStyle(fontSize: 40)))
-              ],
+            const SizedBox(
+              height: 100,
             ),
-          ),
-        ],
+            // ElevatedButton(onPressed: () {
+            //
+            // }, child: const Text("Book It")),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ElevatedButton(
+                      onPressed: () async {
+                        Navigator.of(context).pushNamed('Payment');
+                        var tableRef = ref.child("second garage");
+                        await tableRef
+                            .child("Slot 1")
+                            .once()
+                            .then((DataSnapshot snapshot) {
+                          if (snapshot.value == 1) {
+                            if (kDebugMode) {
+                              print('emp');
+                            }
+                          } else {
+                            if (kDebugMode) {
+                              print('not emp');
+                            }
+                          }
+                          if (kDebugMode) {
+                            print(snapshot.value);
+                          }
+                        });
+                      },
+                      child: const Text("Booking",
+                          style: TextStyle(fontSize: 40))),
+                  ElevatedButton(
+                      onPressed: () async {
+                        var tableRef = ref.child("second garage");
+                        await tableRef
+                            .child("gate")
+                            .once()
+                            .then((DataSnapshot snapshot) {
+                          if (snapshot.value == true) {
+                            tableRef.update({
+                              'gate': false,
+                            });
+                          } else {
+                            tableRef.update({
+                              'gate': true,
+                            });
+                          }
+                        });
+                        // var gateValue = ref.child("second garage");
+                        // await gateValue.update(
+                        //     {
+                        //       'gate': true,
+                        //     }
+                        // );
+                        // gateValue.push();
+                      },
+                      child:
+                          const Text('update', style: TextStyle(fontSize: 40)))
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget buildConn1() {
     return FirebaseAnimatedList(
-      shrinkWrap: true,
+        shrinkWrap: true,
         query: ref,
         itemBuilder: (BuildContext context, DataSnapshot snapshot,
             Animation animation, int index) {
-          if(snapshot.value["Slot 1"]==0){
+          if (snapshot.value["Slot 1"] == 0) {
             return Container(
               height: 40,
               color: Colors.green,
             );
-          }else{
+          } else {
             return Container(
               height: 40,
               color: Colors.red,
@@ -150,18 +172,19 @@ class _HomeScreen extends State<HomeScreen> {
           }
         });
   }
+
   Widget buildConn2() {
     return FirebaseAnimatedList(
         shrinkWrap: true,
         query: ref,
         itemBuilder: (BuildContext context, DataSnapshot snapshot,
             Animation animation, int index) {
-          if(snapshot.value["Slot 2"]==0){
+          if (snapshot.value["Slot 2"] == 0) {
             return Container(
               height: 40,
               color: Colors.green,
             );
-          }else{
+          } else {
             return Container(
               height: 40,
               color: Colors.red,
