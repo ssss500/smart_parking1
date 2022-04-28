@@ -31,7 +31,7 @@ class _HomeScreen extends State<HomeScreen> {
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
               "Choose your slot",
@@ -117,6 +117,9 @@ class _HomeScreen extends State<HomeScreen> {
                       },
                       child: const Text("Booking",
                           style: TextStyle(fontSize: 40))),
+                  const SizedBox(
+                    width: 40,
+                  ),
                   ElevatedButton(
                       onPressed: () async {
                         var tableRef = ref.child("second garage");
@@ -128,10 +131,17 @@ class _HomeScreen extends State<HomeScreen> {
                             tableRef.update({
                               'gate': false,
                             });
+                            if (kDebugMode) {
+                              print(snapshot.value);
+                            }
+
                           } else {
                             tableRef.update({
                               'gate': true,
                             });
+                            if (kDebugMode) {
+                              print(snapshot.value);
+                            }
                           }
                         });
                         // var gateValue = ref.child("second garage");
