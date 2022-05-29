@@ -1,36 +1,49 @@
+// ignore_for_file: prefer_const_constructors, unnecessary_null_comparison
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_parking/login_signup/sign_up.dart';
-import 'package:smart_parking/pages/home_screen.dart';
-import 'intro.dart';
-import 'login_signup/login.dart';
-import 'pages/payment.dart';
-
-
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:smart_parking/switch_login.dart';
+//import 'package:smart_parking/firebase_options.dart';
+import 'package:smart_parking/view/home_view.dart';
+import 'firebase_options.dart';
+import 'view/intro.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // bool isLogin;
-  await Firebase.initializeApp();
+//  await GetStorage.init();
+
+//  await Firebase.initializeApp();
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+  }
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   FirebaseAuth.instance.currentUser;
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+//  FirebaseAuth auth = FirebaseAuth.instance;
+
+//  const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+
+    return GetMaterialApp(
+      theme: ThemeData(
+          bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: Colors.transparent,
+      )),
       debugShowCheckedModeBanner: false,
-      home: const Intro(),
-      routes: {
-        'login': (context) => const LoginScreen(),
-        'Sign Up': (context) => const SignUpScreen(),
-        'Home': (context) =>  const HomeScreen(),
-        'Intro':(context) => const Intro(),
-        'Payment':(context) => const PayScreen(),
-      },
+      home: SwitchLogin(),
     );
   }
 }
