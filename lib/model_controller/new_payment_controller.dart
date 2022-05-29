@@ -32,7 +32,7 @@ class NewPaymentController extends GetxController {
           .ref('users/${GetStorage().read("phoneNumber")}')
           .child('card')
           .get()
-          .then((value) {
+          .then((value) async {
         List listCard;
         try {
           listCard = value.value as List;
@@ -46,6 +46,10 @@ class NewPaymentController extends GetxController {
           'cvvCode': cvvCode,
         };
         listCard.addAll({data});
+        await FirebaseDatabase.instance
+            .ref('users/${GetStorage().read("phoneNumber")}')
+            .child('card')
+            .set(listCard);
         print(listCard);
       });
     }
