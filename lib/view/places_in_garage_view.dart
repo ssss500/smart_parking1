@@ -19,19 +19,20 @@ class PlacesInGarageView extends StatefulWidget {
 }
 
 class _PlacesInGarageViewState extends State<PlacesInGarageView> {
+  HomeController homeController=Get.put(HomeController());
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: Text('Tahrir Square Garage'),
-          backgroundColor: Colors.grey,
+          title: Text(homeController.titleParking!),
+          backgroundColor: primaryColor,
           elevation: 0,
         ),
         body: Container(
           height: double.infinity,
           width: double.infinity,
-          color: Colors.grey,
+          color: Colors.white,
           child: Column(
             children: [
               Row(
@@ -50,7 +51,7 @@ class _PlacesInGarageViewState extends State<PlacesInGarageView> {
                               child: CustomText(
                                 text: 'The Passage',
                                 fontSize: 30,
-                                color: Colors.white38,
+                                color: Colors.black45,
                               ),
                             ),
                             SizedBox(
@@ -71,14 +72,14 @@ class _PlacesInGarageViewState extends State<PlacesInGarageView> {
                             ),
                             Icon(
                               Icons.arrow_upward,
-                              color: Colors.white,
+                              color: Colors.black45,
                             ),
                             SizedBox(
                               height: 10,
                             ),
                             CustomText(
                               text: 'ENTRY',
-                              color: Colors.white,
+                              color: Colors.black45,
                             )
                           ],
                         ),
@@ -96,16 +97,16 @@ class _PlacesInGarageViewState extends State<PlacesInGarageView> {
                     PlacesInGarageController controller =
                         Get.put(PlacesInGarageController());
 
-                  if (controller.slotSelected != '') {
-                    Get.to(() => HomePaymentView());
-                  } else {
-                    Get.snackbar(
-                      'Notes !',
-                      "You should select any slot before booking",
-                      snackPosition: SnackPosition.BOTTOM,
-                      backgroundColor: Colors.red.shade200,
-                    );
-                  }
+                    if (controller.slotSelected != '') {
+                      Get.to(() => HomePaymentView());
+                    } else {
+                      Get.snackbar(
+                        'Notes !',
+                        "You should select any slot before booking",
+                        snackPosition: SnackPosition.BOTTOM,
+                        backgroundColor: Colors.red.shade200,
+                      );
+                    }
                   },
                   text: 'book now',
                 ),
@@ -137,10 +138,6 @@ Widget ListCarParking(left, idSlot) {
 }
 
 Widget CarImage({index, left, idSlot}) {
-//  HomeController homeController = Get.put(HomeController());
-//  PlacesInGarageController placesController =
-//      Get.put(PlacesInGarageController());
-
   return GetBuilder<PlacesInGarageController>(
     init: PlacesInGarageController(),
     builder: (placesInGarageController) => MaterialButton(
@@ -151,15 +148,15 @@ Widget CarImage({index, left, idSlot}) {
         decoration: left
             ? BoxDecoration(
                 border: Border(
-                top: BorderSide(width: 1.0, color: Colors.white),
-                bottom: BorderSide(width: 1.0, color: Colors.white),
-                left: BorderSide(width: 1.0, color: Colors.white),
+                top: BorderSide(width: 1.0, color: primaryColor),
+                bottom: BorderSide(width: 1.0, color: primaryColor),
+                left: BorderSide(width: 1.0, color:primaryColor),
               ))
             : BoxDecoration(
                 border: Border(
-                top: BorderSide(width: 1.0, color: Colors.white),
-                bottom: BorderSide(width: 1.0, color: Colors.white),
-                right: BorderSide(width: 1.0, color: Colors.white),
+                top: BorderSide(width: 1.0, color: primaryColor),
+                bottom: BorderSide(width: 1.0, color:primaryColor),
+                right: BorderSide(width: 1.0, color: primaryColor),
               )),
         child: index > 0
             ? SizedBox(
@@ -170,8 +167,8 @@ Widget CarImage({index, left, idSlot}) {
                 ),
               )
             : (idSlot == 'A1'
-                    ? placesInGarageController.slot1 == 'empty'
-                    : placesInGarageController.slot2 == 'empty')
+                    ? placesInGarageController.A1 == 'empty'
+                    : placesInGarageController.A2 == 'empty')
                 ? Container(
                     height: 70,
                     color: placesInGarageController.slotSelected == ''
@@ -184,8 +181,8 @@ Widget CarImage({index, left, idSlot}) {
                     ),
                   )
                 : (idSlot == 'A1'
-                            ? placesInGarageController.slot1 == 'full'
-                            : placesInGarageController.slot2 == 'full') &&
+                            ? placesInGarageController.A1 == 'full'
+                            : placesInGarageController.A2 == 'full') &&
                         (idSlot == 'A1'
                             ? placesInGarageController.sensor1 == 1
                             : placesInGarageController.sensor2 == 1)
@@ -193,8 +190,8 @@ Widget CarImage({index, left, idSlot}) {
                         ? leftImage()
                         : imageCar()
                     : (idSlot == 'A1'
-                                ? placesInGarageController.slot1 == 'full'
-                                : placesInGarageController.slot2 == 'full') &&
+                                ? placesInGarageController.A1 == 'full'
+                                : placesInGarageController.A2 == 'full') &&
                             (idSlot == 'A1'
                                 ? placesInGarageController.sensor1 == 0
                                 : placesInGarageController.sensor2 == 0)
@@ -208,7 +205,7 @@ Widget CarImage({index, left, idSlot}) {
                                     child: Icon(
                                   Icons.watch_later_outlined,
                                   color: Colors.white,
-                                      size: 30,
+                                  size: 30,
                                 ))
                               ],
                             ),

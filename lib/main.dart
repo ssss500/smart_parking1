@@ -14,26 +14,23 @@ import 'firebase_options.dart';
 import 'view/intro.dart';
 
 main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // bool isLogin;
-//  await GetStorage.init();
-
-//  await Firebase.initializeApp();
+  // need to map
   if (defaultTargetPlatform == TargetPlatform.android) {
     AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
   }
+  // need to firebase
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  //need to firebase auth
   FirebaseAuth.instance.currentUser;
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-//  FirebaseAuth auth = FirebaseAuth.instance;
 
-//  const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
 

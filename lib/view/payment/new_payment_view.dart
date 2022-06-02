@@ -36,6 +36,7 @@ class NewPaymentView extends StatelessWidget {
                 cardHolderName: paymentController.cardHolderName,
                 cvvCode: paymentController.cvvCode,
                 showBackView: paymentController.isCvvFocused,
+                isHolderNameVisible: true,
                 obscureCardNumber: true,
                 obscureCardCvv: true,
                 onCreditCardWidgetChange: (creditCardBrand) {},
@@ -60,7 +61,7 @@ class NewPaymentView extends StatelessWidget {
                       cvvCodeDecoration: CustomInputDecoration(
                           labelText: 'CVV', hintText: 'xxx'),
                       cardHolderDecoration: CustomInputDecoration(
-                          labelText: 'Card Holder', hintText: 'xxx'),
+                          labelText: 'Card Holder', ),
                     ),
                     Padding(
                       padding:

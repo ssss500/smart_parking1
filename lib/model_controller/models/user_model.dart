@@ -5,21 +5,36 @@ import 'package:firebase_database/firebase_database.dart';
 class UserModel {
   //string
   final name, phoneNumber;
+  bool inGarage, isReservation;
 
   //list
-  final cards;
+  List card=[];
 
-  UserModel({this.name, this.phoneNumber, this.cards});
+  UserModel({
+    this.name,
+    this.phoneNumber,
+    required this.card,
+    required this.inGarage,
+    required this.isReservation,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
         name: json['name'],
+        inGarage: json['inGarage'],
         phoneNumber: json['phoneNumber'],
-        cards: json['cards']);
+        isReservation: json['isReservation'],
+        card: json['card']??=[],
+    );
   }
 
   Map<String, dynamic> toJson() {
-
-    return {"name": name, "phoneNumber": phoneNumber, 'cards': cards};
+    return {
+      "name": name,
+      "phoneNumber": phoneNumber,
+      "isReservation": isReservation,
+      'card': card,
+      'inGarage': inGarage
+    };
   }
 }

@@ -14,6 +14,7 @@ import 'package:get_storage/get_storage.dart';
 //import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:smart_parking/model_controller/models/user_model.dart';
+import 'package:smart_parking/model_controller/places_in_garage_controller.dart';
 
 import 'directions_model.dart';
 import '../view/widgets/custom_markers_map.dart';
@@ -23,9 +24,8 @@ class HomeController extends GetxController {
   final ContainerTransitionType transitionType = ContainerTransitionType.fade;
 
   late GoogleMapController googleMapController;
-  var userMode;
-  String name = '', phoneNumber = '', serverTitleGarage = '';
-  List cards = [];
+  late UserModel userMode;
+  String serverTitleGarage = '';
 
   // my location var
   double? myLatitude = null, myLongitude = null;
@@ -54,7 +54,8 @@ class HomeController extends GetxController {
 
   @override
   onInit() async {
-    listenFirebaseUser();
+    await listenFirebaseUser();
+    print("on init");
     await determinePosition().then((value) {
       myLatitude = value.latitude;
       myLongitude = value.longitude;
@@ -71,27 +72,27 @@ class HomeController extends GetxController {
   }
 
   listenFirebaseUser() async {
+    print(GetStorage().read('phoneNumber'));
     DatabaseReference starCountRef = await FirebaseDatabase.instance
         .ref('users/${GetStorage().read('phoneNumber')}/');
     await starCountRef.onValue.listen((DatabaseEvent event) {
-      Map<String, dynamic> data = Map<String, dynamic>.from(
-          event.snapshot.value as Map<String, dynamic>);
-      userMode = UserModel.fromJson(data);
-      name = userMode.name;
-      phoneNumber = userMode.phoneNumber;
-      cards = userMode.cards;
+//      Map<String, dynamic> data = Map<String, dynamic>.from(
+//          event.snapshot.value as Map<String, dynamic>);
+      userMode = UserModel.fromJson(
+          Map<String, dynamic>.from(event.snapshot.value as dynamic));
+
       update();
     });
   }
 
-  goToMyLocation() async {
-    Position position = await determinePosition();
-    myLatitude = position.latitude;
-    myLongitude = position.longitude;
-
-    googleMapController.animateCamera(CameraUpdate.newCameraPosition(
-        CameraPosition(target: LatLng(myLatitude!, myLongitude!), zoom: 15)));
-  }
+//  goToMyLocation() async {
+//    Position position = await determinePosition();
+//    myLatitude = position.latitude;
+//    myLongitude = position.longitude;
+//
+//    googleMapController.animateCamera(CameraUpdate.newCameraPosition(
+//        CameraPosition(target: LatLng(myLatitude!, myLongitude!), zoom: 15)));
+//  }
 
   Future<Position> determinePosition() async {
     bool serviceEnabled;
@@ -128,34 +129,57 @@ class HomeController extends GetxController {
   createMarkers() {
     markers.addAll({
       Marker(
-          infoWindow: InfoWindow(
-            title: 'الجراج الاول',
-          ),
+          infoWindow: !userMode.toJson()['isReservation']
+              ? InfoWindow(
+                  title: 'First Garage',
+                )
+              : InfoWindow.noText,
           onTap: () {
             // Get directions
-            getPolylines(
-                latitudeEnd: 30.040429,
-                longitudeEnd: 31.010068,
-                title: 'الجراج الاول',
-                serverTitle: 'firstGarage',
-                cost: 17,
-                image: 'assets/image/parking.png');
+
+            if (!userMode.toJson()['isReservation']) {
+              getPolylines(
+                  latitudeEnd: 30.040429,
+                  longitudeEnd: 31.010068,
+                  title: 'First Garage',
+                  serverTitle: 'firstGarage',
+                  cost: 17,
+                  image: 'assets/image/parking.png');
+            } else {
+              Get.snackbar(
+                'Note !',
+                "You must cancel the reservation in the other garage",
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.red.shade200,
+              );
+            }
           },
           markerId: const MarkerId('id-1'),
           position: LatLng(30.040429, 31.010068)),
       Marker(
-          infoWindow: InfoWindow(
-            title: 'الجراج الثاني',
-          ),
+          infoWindow: !userMode.toJson()['isReservation']
+              ? InfoWindow(
+                  title: 'Second Garage',
+                )
+              : InfoWindow.noText,
           draggable: true,
           onTap: () async {
-            getPolylines(
-                latitudeEnd: 30.037391,
-                longitudeEnd: 30.985962,
-                title: 'الجراج الثاني',
-                serverTitle: 'secondGarage',
-                cost: 10,
-                image: 'assets/image/parking2.png');
+            if (!userMode.toJson()['isReservation']) {
+              getPolylines(
+                  latitudeEnd: 30.037391,
+                  longitudeEnd: 30.985962,
+                  title: 'Second Garage',
+                  serverTitle: 'secondGarage',
+                  cost: 10,
+                  image: 'assets/image/parking2.png');
+            } else {
+              Get.snackbar(
+                'Note !',
+                "You must cancel the reservation in the other garage",
+                snackPosition: SnackPosition.BOTTOM,
+                backgroundColor: Colors.red.shade200,
+              );
+            }
           },
           markerId: const MarkerId('id-2'),
           position: LatLng(30.037391, 30.985962)),
@@ -171,26 +195,9 @@ class HomeController extends GetxController {
     info = directions;
     costPerHour = cost;
     titleParking = title;
-    this.serverTitleGarage = serverTitle;
+    serverTitleGarage = serverTitle;
     this.image = image;
     update();
-//    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-//      "AIzaSyAjtS38IGjsiLNNvKiDE-cNw7habDajgB8",
-//      PointLatLng(myLatitude!, myLongitude!),
-//      PointLatLng(latitudeEnd, longitudeEnd),
-//      travelMode: TravelMode.driving,
-//    );
-//
-//    if (result.points.isNotEmpty) {
-//      polylineCoordinates = [];
-//      result.points.forEach((PointLatLng point) {
-//        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-//      });
-//    } else {
-//      print(result.errorMessage);
-//    }
-//
-//    addPolyLine(polylineCoordinates);
   }
 
   addPolyLine(List<LatLng> polylineCoordinates) {
@@ -205,16 +212,68 @@ class HomeController extends GetxController {
     update();
   }
 
-//  addMyLocationInMarkers(){
-//    markers.add(
-//      Marker(
-//          infoWindow: InfoWindow(
-//            title: 'Me',
-//          ),
-//          icon:BitmapDescriptor.defaultMarker,
-//          markerId: const MarkerId('me'),
-//          position: LatLng(myLatitude!, myLongitude!)),
-//    );
-//    update();
-//  }
+
+  openGateToExit() async {
+    PlacesInGarageController places = Get.put(PlacesInGarageController());
+
+    await FirebaseDatabase.instance
+        .ref('users/${GetStorage().read('phoneNumber')}')
+        .update({
+      'inGarage': false,
+      'isReservation': false,
+    });
+    await FirebaseDatabase.instance
+        .ref(serverTitleGarage)
+        .update({'gate': 'open', places.slotSelected: 'empty'});
+    Get.snackbar(
+      'Note !',
+      "The gate is open, please cross now",
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.green.shade200,
+    );
+    places.slotSelected='';
+    update();
+  }
+
+  openGateToCross() async {
+    PlacesInGarageController places = Get.put(PlacesInGarageController());
+
+    await FirebaseDatabase.instance
+        .ref('users/${GetStorage().read('phoneNumber')}')
+        .update({
+      'inGarage': true,
+    });
+    await FirebaseDatabase.instance
+        .ref(serverTitleGarage)
+        .update({'gate': 'open', places.slotSelected: 'openLed'});
+    Get.snackbar(
+      'Note !',
+      "The gate is open, please cross now to ${places.slotSelected}",
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.green.shade200,
+    );
+    update();
+  }
+
+  cancelOfReservation() async {
+    PlacesInGarageController places = Get.put(PlacesInGarageController());
+
+    await FirebaseDatabase.instance
+        .ref('users/${GetStorage().read('phoneNumber')}')
+        .update({
+      'inGarage': false,
+      'isReservation': false,
+    });
+    places.slotSelected='';
+    await FirebaseDatabase.instance
+        .ref(serverTitleGarage)
+        .update({places.slotSelected: 'empty'});
+    Get.snackbar(
+      'Note !',
+      "Your reservation has been canceled successfully",
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.green.shade200,
+    );
+    update();
+  }
 }

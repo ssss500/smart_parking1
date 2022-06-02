@@ -26,18 +26,19 @@ class NewPaymentController extends GetxController {
   Future<void> saveCardFun() async {
     if (cardNumber.length == 19 &&
         expiryDate.length == 5 &&
-        cvvCode.length == 3 &&
+        cvvCode.length > 2 &&
         cardHolderName.length > 4) {
       await FirebaseDatabase.instance
           .ref('users/${GetStorage().read("phoneNumber")}')
           .child('card')
           .get()
           .then((value) async {
-        List listCard;
+        var list = [];
+        var listCards = [];
         try {
-          listCard = value.value as List;
+          list = value.value as List;
         } catch (e) {
-          listCard = [];
+          list = [];
         }
         final data = {
           'cardNumber': cardNumber,
@@ -45,14 +46,22 @@ class NewPaymentController extends GetxController {
           'cardHolderName': cardHolderName,
           'cvvCode': cvvCode,
         };
-        listCard.addAll({data});
+        print("data " + data.toString());
+        print("list " + list.toString());
+        if (list.isNotEmpty) {
+          listCards.addAll(list);
+        }
+        listCards.addAll([data]);
+        print("listCard " + listCards.toString());
+
         await FirebaseDatabase.instance
             .ref('users/${GetStorage().read("phoneNumber")}')
             .child('card')
-            .set(listCard);
-        print(listCard);
+            .set(listCards)
+            .then((value) {
+          Get.back();
+        });
       });
     }
-//    Get.to(() => HomeView());
   }
 }

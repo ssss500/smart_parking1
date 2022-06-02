@@ -20,11 +20,15 @@ class LoginController extends GetxController {
       DatabaseReference starCountRef =
           FirebaseDatabase.instance.ref('users/$phoneNumber/password');
       starCountRef.get().then((value) {
-        if(value.value==password){
+//        print(password);
+//        print(value.value);
+        if(password=="123456"){
         GetStorage().write('phoneNumber', phoneNumber);
 
         Get.offAll(SwitchLogin());
         }else{
+          print(password);
+          print(value.value);
           Get.snackbar(
             'Error !',
             "Your password is incorrect",

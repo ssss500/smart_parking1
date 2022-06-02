@@ -1,8 +1,13 @@
-// ignore_for_file: use_key_in_widget_constructors, avoid_unnecessary_containers, prefer_const_constructors
+// ignore_for_file: use_key_in_widget_constructors, avoid_unnecessary_containers, prefer_const_constructors, avoid_print, unnecessary_string_interpolations
 
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:smart_parking/model_controller/home_controller.dart';
+import 'package:smart_parking/model_controller/places_in_garage_controller.dart';
+import 'package:smart_parking/view/home_view.dart';
 import 'package:smart_parking/view/payment/new_payment_view.dart';
 import 'package:smart_parking/view/widgets/custom_text.dart';
 
@@ -14,8 +19,8 @@ class HomePaymentView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(TextString.addNewCard),
-        backgroundColor: Colors.grey,
+        title: Text(TextString.yourCards),
+        backgroundColor: primaryColor,
         elevation: 0,
       ),
       body: Padding(
@@ -26,8 +31,7 @@ class HomePaymentView extends StatelessWidget {
             Container(
               height: 80,
               decoration: BoxDecoration(
-                  color: Colors.black26,
-                  borderRadius: BorderRadius.circular(20)),
+                  color: primaryColor, borderRadius: BorderRadius.circular(20)),
               child: Padding(
                 padding: const EdgeInsets.only(
                   left: 15,
@@ -36,7 +40,7 @@ class HomePaymentView extends StatelessWidget {
                 child: MaterialButton(
                   padding: const EdgeInsets.all(0),
                   onPressed: () {
-                    Get.to(() =>NewPaymentView());
+                    Get.to(() => NewPaymentView());
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -44,6 +48,7 @@ class HomePaymentView extends StatelessWidget {
                       CustomText(
                         text: TextString.addNewCard,
                         fontSize: 20,
+                        color: Colors.white,
                       ),
                       Container(
                         height: 30,
@@ -60,30 +65,81 @@ class HomePaymentView extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: 1,
-                itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    child: CreditCardWidget(
-                      cardNumber: "1234522223313167899",
-                      expiryDate: "expiryDate",
-                      cardHolderName: "cardHolderName",
-                      cvvCode: "cvvCode",
-                      showBackView: false,
-                      obscureCardNumber: true,
-                      obscureCardCvv: true,
-                      onCreditCardWidgetChange: (creditCardBrand) {},
+            ), //list cards
+            StreamBuilder(
+                stream: FirebaseDatabase.instance
+                    .ref('users/${GetStorage().read("phoneNumber")}')
+                    .child('card')
+                    .onValue,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Container();
+                  }
+                  if (snapshot.hasError) {
+                    return Container();
+                  }
+                  List values;
+                  try {
+                    DatabaseEvent dataValues =
+                        snapshot.data! as DatabaseEvent; //here's the typo;
+                    values = dataValues.snapshot.value as List;
+                    print(values);
+                  } catch (e) {
+                    values = [];
+                    print('catch : $e');
+                  }
+                  return Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: values.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return MaterialButton(
+                          onPressed: () => paymentFun(),
+                          child: Container(
+                            child: CreditCardWidget(
+                              width: MediaQuery.of(context).size.width,
+                              cardNumber: values[index]['cardNumber'],
+                              expiryDate: values[index]['expiryDate'],
+                              cardHolderName: values[index]['cardHolderName'],
+                              cvvCode: values[index]['cvvCode'],
+                              showBackView: false,
+                              obscureCardNumber: true,
+                              obscureCardCvv: true,
+                              isHolderNameVisible: true,
+                              onCreditCardWidgetChange: (creditCardBrand) {},
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   );
-                },
-              ),
-            ), //list of old cards
+                }),
           ],
         ),
       ),
+    );
+  }
+
+  paymentFun() async {
+    PlacesInGarageController places = Get.put(PlacesInGarageController());
+    HomeController homeController = Get.put(HomeController());
+    await FirebaseDatabase.instance
+        .ref('users/${GetStorage().read('phoneNumber')}')
+        .update({
+      'isReservation': true,
+    });
+    await FirebaseDatabase.instance
+        .ref('${homeController.serverTitleGarage}')
+        .update({
+      places.slotSelected: 'full',
+    });
+    Get.to(HomeView());
+
+    Get.snackbar(
+      'Successful',
+      "Slot number ${places.slotSelected} has been booked successfully",
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.green.shade200,
     );
   }
 }

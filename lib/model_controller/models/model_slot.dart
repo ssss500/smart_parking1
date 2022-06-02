@@ -1,24 +1,24 @@
-// ignore_for_file: prefer_typing_uninitialized_variables, unnecessary_new
+// ignore_for_file: prefer_typing_uninitialized_variables, unnecessary_new, non_constant_identifier_names
 
 import 'package:firebase_database/firebase_database.dart';
 
 class SlotModel {
   //string
-  final sensor1, sensor2, slot1, slot2, gate;
+  final sensor1, sensor2, A1, A2, gate;
 
   SlotModel(
       {this.sensor1,
       this.sensor2,
-      this.slot1 = '',
-      this.slot2 = '',
+      this.A1 = '',
+      this.A2 = '',
       this.gate});
 
   factory SlotModel.fromJson(Map<String, dynamic> json) {
     return SlotModel(
         sensor1: json['sensor1'],
         sensor2: json['sensor2'],
-        slot1: json['slot1'],
-        slot2: json['slot2'],
+        A1: json['A1'],
+        A2: json['A2'],
         gate: json['gate']);
   }
 
@@ -26,8 +26,8 @@ class SlotModel {
     return {
       "sensor1": sensor1,
       "sensor2": sensor2,
-      'slot1': slot1,
-      'slot2': slot2,
+      'A1': A1,
+      'A2': A2,
       'gate': gate
     };
   }

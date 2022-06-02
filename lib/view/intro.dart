@@ -13,7 +13,7 @@ import 'package:smart_parking/view/widgets/custom_text.dart';
 import 'login_signup/login.dart';
 
 class Intro extends StatelessWidget {
-
+// the first page intro to app to sign up or login in
   @override
   Widget build(BuildContext context) {
     return Scaffold(

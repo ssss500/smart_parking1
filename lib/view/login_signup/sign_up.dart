@@ -41,7 +41,7 @@ class SignUpView extends StatelessWidget {
                         title: TextString.nameString,
                         hint: 'Mohmed Ahmed',
                         autoFillHints:const [AutofillHints.name],
-                        autofocus: true,
+//                        autofocus: true,
                         onChanged: (c) {
                           signupController.name = c;
                         },
@@ -56,26 +56,8 @@ class SignUpView extends StatelessWidget {
                           return null;
                         },
                       ), //email
-//                      CustomTextField(
-//                        title: TextString.emailString,
-//                        hint: 'mohmed@gmail.com',
-//                        textInputType: TextInputType.emailAddress,
-//                        autoFillHints:const [AutofillHints.email],
-//
-//                        onChanged: (c) {
-//                          signupController.email = c;
-//                        },
-//                        iconData: Icons.email,
-//                        validator: (value) {
-//                          if (value!.length > 100) {
-//                            return "the email can`t to be larger than 100 letters";
-//                          }
-//                          if (value.length < 5) {
-//                            return "the email can`t to be less than 5 letters";
-//                          }
-//                          return null;
-//                        },
-//                      ), //phone
+
+                      //phone
                       CustomTextField(
                         title: TextString.phoneNumberString,
                         hint: '0101234567',

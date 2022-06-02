@@ -1,15 +1,17 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, await_only_futures, unnecessary_new
 
 import 'dart:async';
 
 //import 'package:custom_map_markers/custom_map_markers.dart';
 import 'package:animations/animations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:smart_parking/main.dart';
+import 'package:smart_parking/model_controller/places_in_garage_controller.dart';
 import 'package:smart_parking/switch_login.dart';
 import 'package:smart_parking/view/personal_page.dart';
 import 'package:smart_parking/view/places_in_garage_view.dart';
@@ -18,6 +20,7 @@ import 'package:smart_parking/view/widgets/custom_buttom.dart';
 import 'package:smart_parking/view/widgets/custom_text.dart';
 
 import '../model_controller/home_controller.dart';
+
 const double fabDimension = 56.0;
 
 class HomeView extends StatelessWidget {
@@ -40,7 +43,6 @@ class HomeView extends StatelessWidget {
                 child: OpenContainer(
                   transitionType: homeController.transitionType,
                   openBuilder: (context, VoidCallback _) {
-
                     return PersonalPage();
                   },
                   closedElevation: 0.0,
@@ -50,7 +52,8 @@ class HomeView extends StatelessWidget {
                     ),
                   ),
                   closedColor: Color(0x90000000),
-                  closedBuilder: (BuildContext context, VoidCallback openContainer) {
+                  closedBuilder:
+                      (BuildContext context, VoidCallback openContainer) {
                     return Center(
                       child: Icon(
                         Icons.person,
@@ -123,7 +126,7 @@ class HomeView extends StatelessWidget {
                     child: c.info == null
                         ? Container()
                         : Container(
-                            height: 200,
+                            height: 225,
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.only(
@@ -140,6 +143,8 @@ class HomeView extends StatelessWidget {
 }
 
 Widget bottomSheet() {
+  PlacesInGarageController places = Get.put(PlacesInGarageController());
+
   return GetBuilder<HomeController>(
     init: HomeController(),
     builder: (c) => Padding(
@@ -149,8 +154,8 @@ Widget bottomSheet() {
           Row(
             children: [
               Container(
-                height: 90,
-                width: 90,
+                height: 110,
+                width: 110,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(20),
                     image: DecorationImage(
@@ -159,9 +164,9 @@ Widget bottomSheet() {
                     )),
               ),
               Container(
-                height: 80,
+                height: 110,
                 child: Padding(
-                  padding: const EdgeInsets.only(left: 5.0),
+                  padding: const EdgeInsets.only(left: 5.0,top: 5),
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -173,7 +178,29 @@ Widget bottomSheet() {
                           fontSize: 23,
                         ),
                         SizedBox(
-                          height: 14,
+                          height: 10,
+                        ),
+                        c.userMode.toJson()['isReservation']?   Padding(
+                          padding: const EdgeInsets.only(left:8.0),
+                          child: RichText(
+                            text: new TextSpan(
+                              // Note: Styles for TextSpans must be explicitly defined.
+                              // Child text spans will inherit styles from parent
+                              style: new TextStyle(
+                                fontSize: 17.0,
+                                color: Colors.black,
+                              ),
+                              children: <TextSpan>[
+                                new TextSpan(text: 'Your slot is   ',style: new TextStyle(color: primaryColor)),
+
+                                new TextSpan(text: places.slotSelected, style: new TextStyle(fontWeight: FontWeight.bold,color: Colors.red)),
+                              ],
+                            ),
+                          ),
+                        ):SizedBox(),
+
+                        SizedBox(
+                          height: 8,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
@@ -205,12 +232,44 @@ Widget bottomSheet() {
           SizedBox(
             height: 20,
           ),
-          CustomButton(
-            function: () {
-              Get.to(() => PlacesInGarageView());
-            },
-            text: 'Book Now',
-          )
+          !c.userMode.toJson()['isReservation']
+              ? CustomButton(
+                  function: () {
+                    Get.to(() => PlacesInGarageView());
+                  },
+                  text: 'Book Now',
+                )
+              : c.userMode.toJson()['inGarage']
+                  ? CustomButton(
+                      function: () async {
+                        c.openGateToExit();
+                      },
+                      text: 'Open the gate to exit',
+                    )
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: CustomButton(
+                            function: () async {
+                              c.openGateToCross();
+                            },
+                            text: 'Open Gate',
+                          ),
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: CustomButton(
+                            function: () async {
+                              c.cancelOfReservation();
+                            },
+                            text: 'Cancel',
+                            colorButton: Colors.red,
+                          ),
+                        ),
+                      ],
+                    )
         ],
       ),
     ),

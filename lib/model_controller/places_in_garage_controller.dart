@@ -1,4 +1,4 @@
-// ignore_for_file: await_only_futures, prefer_typing_uninitialized_variables, avoid_print
+// ignore_for_file: await_only_futures, prefer_typing_uninitialized_variables, avoid_print, non_constant_identifier_names
 
 import 'dart:convert';
 
@@ -12,13 +12,13 @@ class PlacesInGarageController extends GetxController {
   var slotSelected = '';
   late SlotModel slotModel;
 
-  late String slot1, slot2, gate;
+  late String A1, A2, gate;
   late int sensor1, sensor2;
 
   selectSlotFun(idSlot) {
     if (idSlot == 'A1'
-        ? slot1 == 'empty'
-        : slot2 == 'empty' && idSlot == 'A1'
+        ? A1 == 'empty'
+        : A2 == 'empty' && idSlot == 'A1'
             ? sensor1 == 0
             : sensor2 == 0) {
       slotSelected = idSlot;
@@ -49,8 +49,8 @@ class PlacesInGarageController extends GetxController {
     await starCountRef.onValue.listen((DatabaseEvent event) {
       slotModel = SlotModel.fromJson(
           Map<String, dynamic>.from(event.snapshot.value as dynamic));
-      slot1 = slotModel.toJson()['slot1'];
-      slot2 = slotModel.toJson()['slot2'];
+      A1 = slotModel.toJson()['A1'];
+      A2 = slotModel.toJson()['A2'];
       sensor1 = slotModel.toJson()['sensor1'];
       sensor2 = slotModel.toJson()['sensor2'];
       gate = slotModel.toJson()['gate'];

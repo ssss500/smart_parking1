@@ -36,12 +36,12 @@ class SignupController extends GetxController {
           },
           codeSent: (String verificationId, int? resendToken) async {
             verificationID = verificationId;
-           await FirebaseDatabase.instance.ref('users/$phoneNumber').set({
+            await FirebaseDatabase.instance.ref('users/$phoneNumber').set({
               "name": name,
               'phoneNumber': phoneNumber,
               'password': password,
               'uid': GetStorage().read('uid'),
-              'cards': [{}]
+              'inGarage': false,
             }).then((value) {
               Get.to(() => PinCodeVerificationScreen());
             });
@@ -64,7 +64,8 @@ class SignupController extends GetxController {
         'phoneNumber': phoneNumber,
         'password': password,
         'uid': GetStorage().read('uid'),
-        'cards': [{}]
+        'inGarage': false,
+        'isReservation':false
       }).then((value) {
         Get.offAll(SwitchLogin());
       });
