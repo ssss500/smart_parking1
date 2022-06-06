@@ -10,6 +10,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:smart_parking/switch_login.dart';
 //import 'package:smart_parking/firebase_options.dart';
 import 'package:smart_parking/view/home_view.dart';
+import 'package:smart_parking/view/splach_screen.dart';
 import 'firebase_options.dart';
 import 'view/intro.dart';
 
@@ -23,6 +24,7 @@ main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await GetStorage.init();
 
   //need to firebase auth
   FirebaseAuth.instance.currentUser;
@@ -40,7 +42,7 @@ class MyApp extends StatelessWidget {
         backgroundColor: Colors.transparent,
       )),
       debugShowCheckedModeBanner: false,
-      home: SwitchLogin(),
+      home: SplachScreen(),
     );
   }
 }

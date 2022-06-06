@@ -22,7 +22,7 @@ class NewPaymentController extends GetxController {
     update();
 //    });
   }
-
+//to save my cards
   Future<void> saveCardFun() async {
     if (cardNumber.length == 19 &&
         expiryDate.length == 5 &&

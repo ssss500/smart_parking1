@@ -11,7 +11,8 @@ class SwitchLogin extends StatelessWidget {
 //You need to choose a start page
   @override
   Widget build(BuildContext context) {
-    return GetStorage().read("phoneNumber") == null || GetStorage().read("phoneNumber") == ''
+    return GetStorage().read("phoneNumber") == null ||
+            GetStorage().read("phoneNumber") == ''
         ? Intro()
         : HomeView();
   }

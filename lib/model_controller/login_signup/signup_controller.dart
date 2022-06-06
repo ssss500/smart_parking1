@@ -16,13 +16,14 @@ class SignupController extends GetxController {
   late String name = '',
       password = '',
       verificationID,
-      phoneNumber = '',
-      confPassword;
+      phoneNumber = '';
   GlobalKey<FormState> formState = GlobalKey<FormState>();
 
   TextEditingController otpController = TextEditingController();
   FirebaseAuth auth = FirebaseAuth.instance;
   singUp() async {
+    print('j');
+    //لتاكيد الفنكشن ان الكلام مكتوب بشكل مظبوط
     if (formState.currentState!.validate()) {
       auth.verifyPhoneNumber(
           phoneNumber: phoneNumber,
@@ -35,18 +36,9 @@ class SignupController extends GetxController {
             print(e.message);
           },
           codeSent: (String verificationId, int? resendToken) async {
+            //after send sms
             verificationID = verificationId;
-            await FirebaseDatabase.instance.ref('users/$phoneNumber').set({
-              "name": name,
-              'phoneNumber': phoneNumber,
-              'password': password,
-              'uid': GetStorage().read('uid'),
-              'inGarage': false,
-            }).then((value) {
-              Get.to(() => PinCodeVerificationScreen());
-            });
-
-            print(verificationID);
+            Get.to(() => PinCodeVerificationScreen());
           },
           codeAutoRetrievalTimeout: (String verificationId) {});
     }
@@ -56,16 +48,18 @@ class SignupController extends GetxController {
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationID, smsCode: otpController.text);
     await auth.signInWithCredential(credential).then((value) async {
-      print("You are logged in successfully");
+     //You are logged in successfully
       print(auth.currentUser!.uid);
       GetStorage().write("phoneNumber", phoneNumber);
       await FirebaseDatabase.instance.ref('users/$phoneNumber').set({
         "name": name,
+        "slotReserved": '',
+        "startTimeOfBooking": '',
         'phoneNumber': phoneNumber,
         'password': password,
         'uid': GetStorage().read('uid'),
         'inGarage': false,
-        'isReservation':false
+        'isReservation': false
       }).then((value) {
         Get.offAll(SwitchLogin());
       });

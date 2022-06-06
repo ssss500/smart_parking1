@@ -31,7 +31,7 @@ class SignUpView extends StatelessWidget {
                 const SizedBox(
                   height: 40,
                 ),
-                //name,email,phone,password
+                //name,phone,password
                 Form(
                   key: signupController.formState,
                   child: Column(
@@ -40,10 +40,10 @@ class SignUpView extends StatelessWidget {
                       CustomTextField(
                         title: TextString.nameString,
                         hint: 'Mohmed Ahmed',
-                        autoFillHints:const [AutofillHints.name],
-//                        autofocus: true,
-                        onChanged: (c) {
-                          signupController.name = c;
+
+                        autoFillHints: const [AutofillHints.name],
+                        onChanged: (text) {
+                          signupController.name = text;
                         },
                         iconData: Icons.person,
                         validator: (value) {
@@ -62,8 +62,7 @@ class SignUpView extends StatelessWidget {
                         title: TextString.phoneNumberString,
                         hint: '0101234567',
                         textInputType: TextInputType.phone,
-                        autoFillHints:const [AutofillHints.telephoneNumber],
-
+                        autoFillHints: const [AutofillHints.telephoneNumber],
                         onChanged: (c) {
                           signupController.phoneNumber = c;
                         },
@@ -77,7 +76,8 @@ class SignUpView extends StatelessWidget {
                           }
                           return null;
                         },
-                      ), //password
+                      ),
+                      //password
                       CustomTextField(
                         title: TextString.passwordString,
                         hint: '********',
@@ -101,8 +101,8 @@ class SignUpView extends StatelessWidget {
                       ), //create account button
                       CustomButton(
                         function: () {
-//                          print(signupController.auth.currentUser!.uid);
-                      signupController.singUp();
+
+                          signupController.singUp();
                         },
                         text: TextString.createAccountString,
                       ),

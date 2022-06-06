@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print, unrelated_type_equality_checks
+// ignore_for_file: avoid_print, unrelated_type_equality_checks, await_only_futures
 
 import 'dart:convert';
 
@@ -17,18 +17,18 @@ class LoginController extends GetxController {
 
   loginFun() async {
     if (formState.currentState!.validate()) {
+      //Verify the password
       DatabaseReference starCountRef =
-          FirebaseDatabase.instance.ref('users/$phoneNumber/password');
+          await FirebaseDatabase.instance.ref('users/$phoneNumber/password');
       starCountRef.get().then((value) {
-//        print(password);
-//        print(value.value);
-        if(password=="123456"){
-        GetStorage().write('phoneNumber', phoneNumber);
+        if (password == "123456") {
+          GetStorage().write('phoneNumber', phoneNumber);
+          Get.offAll(SwitchLogin());
 
-        Get.offAll(SwitchLogin());
-        }else{
+        } else {
           print(password);
           print(value.value);
+          //show error
           Get.snackbar(
             'Error !',
             "Your password is incorrect",
@@ -36,8 +36,8 @@ class LoginController extends GetxController {
             backgroundColor: Colors.red.shade200,
           );
         }
-
-      }).catchError((onError){
+      }).catchError((onError) {
+        //show error
         Get.snackbar(
           'Error !',
           "Your phone number is incorrect",
@@ -45,7 +45,6 @@ class LoginController extends GetxController {
           backgroundColor: Colors.red.shade200,
         );
       });
-
     }
   }
 }

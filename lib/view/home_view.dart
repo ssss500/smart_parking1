@@ -160,7 +160,7 @@ Widget bottomSheet() {
                     borderRadius: BorderRadius.circular(20),
                     image: DecorationImage(
                       fit: BoxFit.cover,
-                      image: AssetImage(c.image!),
+                      image: NetworkImage(c.image!),
                     )),
               ),
               Container(
@@ -216,8 +216,12 @@ Widget bottomSheet() {
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
-                          child: CustomText(
-                            text: '${c.costPerHour}\$ / h ',
+                          child:c.userMode.toJson()['isReservation']? CustomText(
+                            text: 'will be paid ${c.resultBetweenTowDates*10} EGP',
+                            color: primaryColor,
+                            fontSize: 14,
+                          ):CustomText(
+                            text: '${c.costPerHour} EGP / h ',
                             color: primaryColor,
                             fontSize: 14,
                           ),
@@ -235,6 +239,8 @@ Widget bottomSheet() {
           !c.userMode.toJson()['isReservation']
               ? CustomButton(
                   function: () {
+//                    c.listenFirebaseUser();
+                    places.slotSelected='';
                     Get.to(() => PlacesInGarageView());
                   },
                   text: 'Book Now',

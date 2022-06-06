@@ -123,23 +123,42 @@ class HomePaymentView extends StatelessWidget {
   paymentFun() async {
     PlacesInGarageController places = Get.put(PlacesInGarageController());
     HomeController homeController = Get.put(HomeController());
-    await FirebaseDatabase.instance
-        .ref('users/${GetStorage().read('phoneNumber')}')
-        .update({
-      'isReservation': true,
-    });
-    await FirebaseDatabase.instance
-        .ref('${homeController.serverTitleGarage}')
-        .update({
-      places.slotSelected: 'full',
-    });
-    Get.to(HomeView());
 
-    Get.snackbar(
-      'Successful',
-      "Slot number ${places.slotSelected} has been booked successfully",
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.green.shade200,
-    );
+    await FirebaseDatabase.instance.ref(homeController.serverTitleGarage).child(places.slotSelected).get().then((value) async {
+      if(value.value!='full'){
+        await FirebaseDatabase.instance
+            .ref('${homeController.serverTitleGarage}')
+            .update({
+          places.slotSelected: 'full',
+        });
+        await FirebaseDatabase.instance
+            .ref('users/${GetStorage().read('phoneNumber')}')
+            .update({
+          'isReservation': true,
+          'startTimeOfBooking': DateTime.now().toString(),
+          'slotReserved': places.slotSelected,
+          'garageReserved':homeController.serverTitleGarage
+        });
+        Get.to(HomeView());
+
+        Get.snackbar(
+          'Successful',
+          "Slot number ${places.slotSelected} has been booked successfully ،and it was discounted ${homeController.costPerHour} EGP",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.green.shade200,
+        );
+      }else{
+        Get.back();
+        Get.snackbar(
+          'Sorry!!',
+          "This place has been booked by someone else, you can choose another place",
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red.shade200,
+        );
+      }
+    
+    });
+
+
   }
 }

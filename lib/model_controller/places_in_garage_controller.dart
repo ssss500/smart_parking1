@@ -12,15 +12,17 @@ class PlacesInGarageController extends GetxController {
   var slotSelected = '';
   late SlotModel slotModel;
 
-  late String A1, A2, gate;
-  late int sensor1, sensor2;
+
+  // late int sensor1, sensor2;
 
   selectSlotFun(idSlot) {
     if (idSlot == 'A1'
-        ? A1 == 'empty'
-        : A2 == 'empty' && idSlot == 'A1'
-            ? sensor1 == 0
-            : sensor2 == 0) {
+        ?slotModel.toJson()['A1']  == 'empty'
+        : slotModel.toJson()['A2'] == 'empty'
+        // && idSlot == 'A1'
+        //     ? sensor1 == 0
+        //     : sensor2 == 0
+    ) {
       slotSelected = idSlot;
       update();
       print(slotSelected);
@@ -37,11 +39,12 @@ class PlacesInGarageController extends GetxController {
 
   @override
   onInit() async {
-    listenFirebaseUser();
+   await listenFirebaseUser();
     super.onInit();
   }
 
   listenFirebaseUser() async {
+    //to get data my garage as stream
     print('listenFirebaseUser');
     HomeController homeController = Get.put(HomeController());
     DatabaseReference starCountRef =
@@ -49,11 +52,7 @@ class PlacesInGarageController extends GetxController {
     await starCountRef.onValue.listen((DatabaseEvent event) {
       slotModel = SlotModel.fromJson(
           Map<String, dynamic>.from(event.snapshot.value as dynamic));
-      A1 = slotModel.toJson()['A1'];
-      A2 = slotModel.toJson()['A2'];
-      sensor1 = slotModel.toJson()['sensor1'];
-      sensor2 = slotModel.toJson()['sensor2'];
-      gate = slotModel.toJson()['gate'];
+print(slotModel);
       update();
     });
   }
