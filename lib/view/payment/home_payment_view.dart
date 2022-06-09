@@ -124,12 +124,16 @@ class HomePaymentView extends StatelessWidget {
     PlacesInGarageController places = Get.put(PlacesInGarageController());
     HomeController homeController = Get.put(HomeController());
 
-    await FirebaseDatabase.instance.ref(homeController.serverTitleGarage).child(places.slotSelected).get().then((value) async {
-      if(value.value!='full'){
+    await FirebaseDatabase.instance
+        .ref(homeController.serverTitleGarage)
+        .child(places.slotSelected)
+        .get()
+        .then((value) async {
+      if (value.value == 'empty') {
         await FirebaseDatabase.instance
             .ref('${homeController.serverTitleGarage}')
             .update({
-          places.slotSelected: 'full',
+          places.slotSelected: 'wait',
         });
         await FirebaseDatabase.instance
             .ref('users/${GetStorage().read('phoneNumber')}')
@@ -137,7 +141,7 @@ class HomePaymentView extends StatelessWidget {
           'isReservation': true,
           'startTimeOfBooking': DateTime.now().toString(),
           'slotReserved': places.slotSelected,
-          'garageReserved':homeController.serverTitleGarage
+          'garageReserved': homeController.serverTitleGarage
         });
         Get.to(HomeView());
 
@@ -147,18 +151,17 @@ class HomePaymentView extends StatelessWidget {
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.green.shade200,
         );
-      }else{
+      } else {
         Get.back();
+        places.slotSelected='';
         Get.snackbar(
           'Sorry!!',
           "This place has been booked by someone else, you can choose another place",
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red.shade200,
         );
+        places.update();
       }
-    
     });
-
-
   }
 }

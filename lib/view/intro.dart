@@ -30,14 +30,8 @@ class Intro extends StatelessWidget {
                   text: 'Start by creating an account',
                   fontSize: 40,
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                CustomText(
-                  text: 'I`m an early bird and I`m a night owl so I`m wise and I have worms',
-                  fontSize: 20,
-                  color: Colors.grey,
-                ),
+
+
 
                 const SizedBox(
                   height: 200,

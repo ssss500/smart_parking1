@@ -30,7 +30,8 @@ class HomeController extends GetxController {
   String serverTitleGarage = '';
 
   // my location var
-  double? myLatitude = null, myLongitude = null;
+  double? myLatitude = null,
+      myLongitude = null;
 
   String? titleParking, image;
   late int resultBetweenTowDates;
@@ -57,8 +58,6 @@ class HomeController extends GetxController {
   onInit() async {
     await listenFirebaseUser();
 
-    print("on init");
-
 //   await addMyLocationInMarkers();
 
     super.onInit();
@@ -66,18 +65,19 @@ class HomeController extends GetxController {
 
   listenFirebaseUser() async {
     //to get data user as stream
-    print('GetStorage().read(phoneNumber) ${GetStorage().read('phoneNumber')}');
+
     DatabaseReference starCountRef = await FirebaseDatabase.instance
         .ref('users/${GetStorage().read('phoneNumber')}/');
     await starCountRef.onValue.listen((DatabaseEvent event) async {
       print('event ${event.snapshot.value}');
+
       userMode = UserModel.fromJson(
           Map<String, dynamic>.from(event.snapshot.value as dynamic));
-
+//get my location
       await determinePosition().then((value) {
         myLatitude = value.latitude;
         myLongitude = value.longitude;
-        print("myLatitude $myLatitude");
+
         initialCameraPosition = CameraPosition(
             target: LatLng(myLatitude!, myLongitude!), zoom: 13.9);
 
@@ -86,9 +86,26 @@ class HomeController extends GetxController {
       if (userMode.toJson()['isReservation']) {
         calculateBetweenTowDates();
       }
+
+      if (userMode.toJson()['startTimeOfBooking'] != '') {
+        final dateNow = DateTime.now();
+        final difference = dateNow
+            .difference(DateTime.parse(
+            userMode.toJson()['startTimeOfBooking'] as String))
+            .inHours;
+        await FirebaseDatabase.instance
+            .ref('${userMode.toJson()['garageReserved']}').child(
+            userMode.toJson()['slotReserved'])
+            .get()
+            .then((value) async {
+          if (value.value == 'wait' && difference == 1) {
+            await cancelOfReservation(wait: 'wait');
+          }
+        });
+      }
       //to get markers
       DatabaseReference markersFromFirebase =
-          await FirebaseDatabase.instance.ref('markers');
+      await FirebaseDatabase.instance.ref('markers');
       await markersFromFirebase.get().then((value) async {
         List listMarkers = value.value as List;
 
@@ -132,23 +149,14 @@ class HomeController extends GetxController {
 
   // create Marker
   createMarkers({listMarkers}) {
-    print(listMarkers[0]['title']);
     for (int i = 0; i < listMarkers.length; i++) {
-      print(listMarkers[i]['title']);
       markers.add(
-        // First Garage
         Marker(
-            infoWindow:
-//            !userMode.toJson()['isReservation']
-//                ?
-                InfoWindow(
+            infoWindow: InfoWindow(
               title: listMarkers[i]['title'],
-            )
-//                : InfoWindow.noText
-            ,
+            ),
             onTap: () {
               // Get directions
-
               if (!userMode.toJson()['isReservation']) {
                 getPolylines(
                     latitudeEnd: listMarkers[i]['latitude'],
@@ -201,36 +209,42 @@ class HomeController extends GetxController {
   }
 
   openGateToExit() async {
+    String randomNumber = GetRandomNum();
     showDialog(
       context: Get.context!, //      barrierDismissible: barrierDismissible,
       builder: (BuildContext dialogContext) {
-        return openGateDialog(onPressed: () async {
-          PlacesInGarageController places = Get.put(PlacesInGarageController());
-          final garageWaitingHours = await calculateBetweenTowDates();
+        return openGateDialog(
+            onPressed: () async {
+              PlacesInGarageController places = Get.put(
+                  PlacesInGarageController());
 
-          await FirebaseDatabase.instance
-              .ref('users/${GetStorage().read('phoneNumber')}')
-              .update({
-            'inGarage': false,
-            'isReservation': false,
-            'slotReserved': '',
-            'garageReserved': '',
-            'startTimeOfBooking': '',
-          });
-          await FirebaseDatabase.instance
-              .ref(serverTitleGarage)
-              .update({'gate': 'open', places.slotSelected: 'empty'});
-          Get.back();
-          Get.snackbar(
-            'Note !',
-            "The gate is open, please cross now ,amount has been deducted ${resultBetweenTowDates * costPerHour} EGP",
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.green.shade200,
-          );
-          places.slotSelected = '';
+              await FirebaseDatabase.instance
+                  .ref('users/${GetStorage().read('phoneNumber')}')
+                  .update({
+                'inGarage': false,
+                'isReservation': false,
+                'slotReserved': '',
+                'garageReserved': '',
+                'startTimeOfBooking': '',
+              });
+              await FirebaseDatabase.instance
+                  .ref(serverTitleGarage)
+                  .update({
+                'gate': 'open',
+                places.slotSelected: 'empty'
+                  });
+              Get.back();
+              Get.snackbar(
+                'Note !',
+                "The gate is open, please cross now ,amount has been deducted ${(resultBetweenTowDates *
+                    (costPerHour / 60)).toInt()} EGP",
+                snackPosition: SnackPosition.TOP,
+                backgroundColor: Colors.green.shade200,
+              );
+              places.slotSelected = '';
 
-          update();
-        });
+              update();
+            }, randomNumber: randomNumber);
       },
     );
   }
@@ -245,6 +259,8 @@ class HomeController extends GetxController {
   }
 
   openGateToCross() async {
+    String randomNumber = GetRandomNum();
+
     showDialog(
       context: Get.context!, //      barrierDismissible: barrierDismissible,
       // false = user must tap button, true = tap outside dialog
@@ -259,7 +275,9 @@ class HomeController extends GetxController {
           });
           await FirebaseDatabase.instance
               .ref(serverTitleGarage)
-              .update({'gate': 'open', places.slotSelected: 'openLed'});
+              .update({'gate': 'open'
+            // , places.slotSelected: 'full'
+              });
           Get.back();
           Get.snackbar(
             'Note !',
@@ -269,15 +287,14 @@ class HomeController extends GetxController {
           );
 
           update();
-        });
+        }, randomNumber: randomNumber);
       },
     );
   }
 
-  cancelOfReservation() async {
+  cancelOfReservation({wait}) async {
     PlacesInGarageController places = Get.put(PlacesInGarageController());
 
-    final garageWaitingHours = await calculateBetweenTowDates();
     await FirebaseDatabase.instance
         .ref('users/${GetStorage().read('phoneNumber')}')
         .update({
@@ -292,12 +309,21 @@ class HomeController extends GetxController {
         .ref(serverTitleGarage)
         .update({places.slotSelected: 'empty'});
     places.slotSelected = '';
-    Get.snackbar(
-      'Note !',
-      "Your reservation has been canceled successfully ،and it was discounted ${garageWaitingHours * costPerHour} EPG",
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: Colors.green.shade200,
-    );
+    if (wait == 'wait') {
+      Get.snackbar(
+        'Note !',
+        "Booking canceled",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red.shade200,
+      );
+    } else {
+      Get.snackbar(
+        'Note !',
+        "Your reservation has been canceled successfully",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green.shade200,
+      );
+    }
     update();
   }
 
@@ -305,15 +331,14 @@ class HomeController extends GetxController {
     final date2 = DateTime.now();
     final difference = date2
         .difference(
-            DateTime.parse(userMode.toJson()['startTimeOfBooking'] as String))
-        .inHours;
+        DateTime.parse(userMode.toJson()['startTimeOfBooking'] as String))
+        .inMinutes;
     resultBetweenTowDates = difference;
     update();
   }
 
-  openGateDialog({onPressed}) {
-    String randomNumber = GetRandomNum(), confirmationNumber = '';
-
+  openGateDialog({onPressed, randomNumber}) {
+    String confirmationNumber = '';
     return AlertDialog(
       title: Text('Note !'),
       content: SizedBox(
@@ -329,7 +354,7 @@ class HomeController extends GetxController {
                 children: <TextSpan>[
                   TextSpan(
                     text:
-                        'To confirm entering the portal, repeat this number   ',
+                    'To confirm entering the portal, repeat this number   ',
                   ),
                   TextSpan(
                       text: randomNumber,
@@ -346,7 +371,7 @@ class HomeController extends GetxController {
               onChanged: (c) {
                 confirmationNumber = c;
               },
-maxLength: 4,
+              maxLength: 4,
             )
           ],
         ),

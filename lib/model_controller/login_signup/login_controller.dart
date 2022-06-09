@@ -21,7 +21,7 @@ class LoginController extends GetxController {
       DatabaseReference starCountRef =
           await FirebaseDatabase.instance.ref('users/$phoneNumber/password');
       starCountRef.get().then((value) {
-        if (password == "123456") {
+        if (password ==  value.value) {
           GetStorage().write('phoneNumber', phoneNumber);
           Get.offAll(SwitchLogin());
 

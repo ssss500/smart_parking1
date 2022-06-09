@@ -8,7 +8,7 @@ const secondColor = Color(0xFFe0f0f6);
 class TextString{
 static String createAccountString='CREATE AN ACCOUNT';
 static String smartParkingString= "Smart Parking 🚗";
-static String signInString='LOGIN IN';
+static String signInString='LOG IN';
 static String nameString='Name';
 static String emailString='Email';
 static String phoneNumberString='Phone Number';

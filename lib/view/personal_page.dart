@@ -16,6 +16,7 @@ class PersonalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('about'),centerTitle: true,backgroundColor: primaryColor,),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -77,7 +78,7 @@ class PersonalPage extends StatelessWidget {
                       GetStorage().remove('phoneNumber');
                       Get.offAll(SwitchLogin());
                     },
-                    text: 'Login out',
+                    text: 'Log out',
                     sizeText: 25,
                     colorText: Colors.white,
                     colorButton: Colors.red,

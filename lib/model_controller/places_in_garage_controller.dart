@@ -8,6 +8,8 @@ import 'package:get/get.dart';
 import 'package:smart_parking/model_controller/home_controller.dart';
 import 'package:smart_parking/model_controller/models/model_slot.dart';
 
+import '../view/payment/home_payment_view.dart';
+
 class PlacesInGarageController extends GetxController {
   var slotSelected = '';
   late SlotModel slotModel;
@@ -19,9 +21,6 @@ class PlacesInGarageController extends GetxController {
     if (idSlot == 'A1'
         ?slotModel.toJson()['A1']  == 'empty'
         : slotModel.toJson()['A2'] == 'empty'
-        // && idSlot == 'A1'
-        //     ? sensor1 == 0
-        //     : sensor2 == 0
     ) {
       slotSelected = idSlot;
       update();
@@ -55,5 +54,18 @@ class PlacesInGarageController extends GetxController {
 print(slotModel);
       update();
     });
+  }
+
+  void bookNowFun() {
+    if (slotSelected != '') {
+      Get.to(() => HomePaymentView());
+    } else {
+      Get.snackbar(
+        'Notes !',
+        "You should select any slot before booking",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade200,
+      );
+    }
   }
 }

@@ -92,7 +92,7 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                       text: "Enter the code sent to ",
                       children: [
                         TextSpan(
-                            text: "${signupController.phoneNumber}",
+                            text: "${signupController.phoneNumber.text}",
                             style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -202,15 +202,6 @@ class _PinCodeVerificationScreenState extends State<PinCodeVerificationScreen> {
                 child: CustomButton(
                   function: () {
                     formKey.currentState!.validate();
-//                    // conditions for validating
-//                    if (currentText.length != 6 || currentText != "123456") {
-//                      errorController!.add(ErrorAnimationType
-//                          .shake); // Triggering error shake animation
-//                      setState(() => hasError = true);
-//                    } else {
-//                      setState(
-//                            () {
-//                          hasError = false;
                     signupController.verifyOTP();
 
                     snackBar("OTP Verified!!");

@@ -63,9 +63,10 @@ class SignUpView extends StatelessWidget {
                         hint: '0101234567',
                         textInputType: TextInputType.phone,
                         autoFillHints: const [AutofillHints.telephoneNumber],
-                        onChanged: (c) {
-                          signupController.phoneNumber = c;
-                        },
+                        controller:signupController. phoneNumber,
+                        // onChanged: (c) {
+                        //   signupController.phoneNumber = c;
+                        // },
                         iconData: Icons.phone,
                         validator: (value) {
                           if (value!.length > 13) {

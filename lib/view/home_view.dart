@@ -107,6 +107,7 @@ class HomeView extends StatelessWidget {
                     initialCameraPosition: c.initialCameraPosition!,
                     onMapCreated: (GoogleMapController controllerMap) {
                       c.googleMapController = controllerMap;
+
                     },
                     polylines: {
                       if (c.info != null)
@@ -134,7 +135,7 @@ class HomeView extends StatelessWidget {
                                     topRight: Radius.circular(30))),
                             child: bottomSheet(),
                           ),
-                  )
+                  ),
                 ],
               ),
       ),
@@ -217,7 +218,7 @@ Widget bottomSheet() {
                         Padding(
                           padding: const EdgeInsets.only(left: 8.0),
                           child:c.userMode.toJson()['isReservation']? CustomText(
-                            text: 'will be paid ${c.resultBetweenTowDates*10} EGP',
+                            text: 'will be paid ${(c.resultBetweenTowDates* (c.costPerHour/60)).toInt()} EGP',
                             color: primaryColor,
                             fontSize: 14,
                           ):CustomText(
@@ -268,7 +269,7 @@ Widget bottomSheet() {
                         Expanded(
                           child: CustomButton(
                             function: () async {
-                              c.cancelOfReservation();
+                              c.cancelOfReservation(wait:'jnajk');
                             },
                             text: 'Cancel',
                             colorButton: Colors.red,
