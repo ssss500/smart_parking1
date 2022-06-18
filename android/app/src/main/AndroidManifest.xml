@@ -8,6 +8,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="smart_parking"
+        android:usesCleartextTraffic="true"
 
         android:requestLegacyExternalStorage="true">
         <activity

@@ -8,17 +8,19 @@ class CustomTextField extends StatelessWidget {
   Function(String)? onChanged;
   TextEditingController? controller;
   IconData? iconData;
+  IconButton? iconButton;
   TextInputType? textInputType;
   Color? color;
   int? maxLength;
   var validator, autoFillHints;
-  bool autofocus;
+  bool autofocus,obscureText;
   Color? colorIcon;
 
   CustomTextField(
       {this.hint,
       this.title,
       this.validator,
+      this.iconButton,
       this.color = Colors.black26,
       this.colorIcon = primaryColor,
       this.onChanged,
@@ -27,6 +29,7 @@ class CustomTextField extends StatelessWidget {
       this.iconData,
       this.autoFillHints,
       this.autofocus = false,
+      this.obscureText = false,
       this.textInputType});
 
   @override
@@ -34,6 +37,7 @@ class CustomTextField extends StatelessWidget {
     return Container(
       width: double.infinity,
       height: 80,
+
       child: Stack(
         alignment: Alignment.topCenter,
         children: [
@@ -43,6 +47,7 @@ class CustomTextField extends StatelessWidget {
               style: TextStyle(fontSize: 20, color: Colors.black),
               keyboardType: textInputType,
               onChanged: onChanged,
+              obscureText:obscureText ,
               controller: controller,
               maxLength: maxLength,
               validator: validator,
@@ -50,7 +55,7 @@ class CustomTextField extends StatelessWidget {
               autofillHints: autoFillHints,
               decoration: InputDecoration(
                 //                labelText:labelText ,
-                suffixIcon: Icon(
+                suffixIcon:iconButton ?? Icon(
                   iconData,
                   color: colorIcon,
                 ),

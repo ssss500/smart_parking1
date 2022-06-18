@@ -15,25 +15,42 @@ import '../../switch_login.dart';
 class SignupController extends GetxController {
   late String name = '',
       password = '',
-      verificationID
-       ;
+      verificationID;
+  bool showPassword=false;
   TextEditingController phoneNumber=TextEditingController();
   GlobalKey<FormState> formState = GlobalKey<FormState>();
+  TextEditingController otpController = TextEditingController();
+  FirebaseAuth auth = FirebaseAuth.instance;
 @override
   onInit(){
   phoneNumber.text='+2';
   super.onInit();
 }
-  TextEditingController otpController = TextEditingController();
-  FirebaseAuth auth = FirebaseAuth.instance;
+
+
   singUp() async {
 
     //لتاكيد الفنكشن ان الكلام مكتوب بشكل مظبوط
     if (formState.currentState!.validate()) {
       auth.verifyPhoneNumber(
-          phoneNumber: phoneNumber.text,
+          phoneNumber: phoneNumber.text,  timeout: const Duration(seconds: 60),
           verificationCompleted: (PhoneAuthCredential credential) async {
-            await auth.signInWithCredential(credential).then((value) {
+            await auth.signInWithCredential(credential).then((value) async {
+              print(auth.currentUser!.uid);
+              GetStorage().write("phoneNumber", phoneNumber.text);
+              await FirebaseDatabase.instance.ref('users/${phoneNumber.text}').set({
+                "name": name,
+                "slotReserved": '',
+                "startTimeOfBooking": '',
+                'garageReserved':'',
+                'phoneNumber': phoneNumber.text,
+                'password': password,
+                'inGarage': false,
+                'isReservation': false,
+
+              }).then((value) {
+                Get.offAll(SwitchLogin());
+              });
               print("You are logged in successfully");
             });
           },
@@ -50,26 +67,10 @@ class SignupController extends GetxController {
   }
 
   void verifyOTP() async {
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+     PhoneAuthProvider.credential(
         verificationId: verificationID,
-        smsCode: otpController.text);
-    await auth.signInWithCredential(credential).then((value) async {
-     //You are logged in successfully
-      print(auth.currentUser!.uid);
-      GetStorage().write("phoneNumber", phoneNumber.text);
-      await FirebaseDatabase.instance.ref('users/${phoneNumber.text}').set({
-        "name": name,
-        "slotReserved": '',
-        "startTimeOfBooking": '',
-        'garageReserved':'',
-        'phoneNumber': phoneNumber.text,
-        'password': password,
-        'inGarage': false,
-        'isReservation': false,
+        smsCode: otpController.text
+    );
 
-      }).then((value) {
-        Get.offAll(SwitchLogin());
-      });
-    });
   }
 }

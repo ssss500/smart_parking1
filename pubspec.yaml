@@ -37,7 +37,8 @@ dependencies:
   # ui package
   awesome_dialog: ^2.2.1
   pin_code_fields: ^7.4.0
-  flutter_credit_card: ^3.0.1
+  flutter_credit_card:
+    path: ./flutter_credit_card-3.0.1
   animations: ^2.0.2
   #dart package
   dio: ^4.0.6

@@ -17,41 +17,46 @@ class LoginView extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(
-              height: 50,
-            ),
-            Text(
-              TextString.smartParkingString,
-              style: TextStyle(
-                fontSize: 39,
+        child: SingleChildScrollView(
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 50,
+                ),
+                Text(
+                  TextString.smartParkingString,
+                  style: TextStyle(
+                    fontSize: 39,
 //                fontWeight: FontWeight.bold,
-              ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Text(
+                  TextString.signInString,
+                  style: const TextStyle(fontSize: 30, color: primaryColor),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                login(),
+                const SizedBox(
+                  height: 15,
+                ),
+              ],
             ),
-            const SizedBox(
-              height: 20,
-            ),
-            Text(
-              TextString.signInString,
-              style: const TextStyle(fontSize: 30, color: primaryColor),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            signUp(),
-            const SizedBox(
-              height: 15,
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget signUp() {
+  Widget login() {
     LoginController loginController = Get.put(LoginController());
     return Form(
       key: loginController.formState,

@@ -40,7 +40,6 @@ class SignUpView extends StatelessWidget {
                       CustomTextField(
                         title: TextString.nameString,
                         hint: 'Mohmed Ahmed',
-
                         autoFillHints: const [AutofillHints.name],
                         onChanged: (text) {
                           signupController.name = text;
@@ -63,7 +62,7 @@ class SignUpView extends StatelessWidget {
                         hint: '0101234567',
                         textInputType: TextInputType.phone,
                         autoFillHints: const [AutofillHints.telephoneNumber],
-                        controller:signupController. phoneNumber,
+                        controller: signupController.phoneNumber,
                         // onChanged: (c) {
                         //   signupController.phoneNumber = c;
                         // },
@@ -79,30 +78,42 @@ class SignUpView extends StatelessWidget {
                         },
                       ),
                       //password
-                      CustomTextField(
-                        title: TextString.passwordString,
-                        hint: '********',
-                        textInputType: TextInputType.visiblePassword,
-                        onChanged: (c) {
-                          signupController.password = c;
-                        },
-                        iconData: Icons.password,
-                        validator: (value) {
-                          if (value!.length > 30) {
-                            return "the password can`t to be larger than 15 letters";
-                          }
-                          if (value.length < 5) {
-                            return "the password can`t to be less than 5 letters";
-                          }
-                          return null;
-                        },
+                  GetBuilder<SignupController>(
+
+                        builder:(c)=> CustomTextField(
+                          title: TextString.passwordString,
+                          hint: '********',
+                          textInputType: TextInputType.visiblePassword,
+                          onChanged: (c) {
+                            signupController.password = c;
+                          },
+                          obscureText:!c.showPassword,
+                          iconButton: IconButton(
+                            onPressed: () {
+                              c.showPassword=!c.showPassword;
+                              c.update();
+                            },
+
+                            icon: c.showPassword
+                                ? const Icon(Icons.visibility)
+                                : const Icon(Icons.visibility_off),
+                          ),
+                          validator: (value) {
+                            if (value!.length > 30) {
+                              return "the password can`t to be larger than 15 letters";
+                            }
+                            if (value.length < 5) {
+                              return "the password can`t to be less than 5 letters";
+                            }
+                            return null;
+                          },
+                        ),
                       ),
                       const SizedBox(
                         height: 35,
                       ), //create account button
                       CustomButton(
                         function: () {
-
                           signupController.singUp();
                         },
                         text: TextString.createAccountString,
