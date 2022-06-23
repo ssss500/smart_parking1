@@ -36,24 +36,24 @@ class SignupController extends GetxController {
           phoneNumber: phoneNumber.text,
           timeout: const Duration(seconds: 60),
           verificationCompleted: (PhoneAuthCredential credential) async {
-            await auth.signInWithCredential(credential).then((value) async {
-              print(auth.currentUser!.uid);
-              GetStorage().write("phoneNumber", phoneNumber.text);
-              await FirebaseDatabase.instance.ref('users/${phoneNumber.text}').set({
-                "name": name,
-                "slotReserved": '',
-                "startTimeOfBooking": '',
-                'garageReserved':'',
-                'phoneNumber': phoneNumber.text,
-                'password': password,
-                'inGarage': false,
-                'isReservation': false,
-
-              }).then((value) {
-                Get.offAll(SwitchLogin());
-              });
-              print("You are logged in successfully");
-            });
+            // await auth.signInWithCredential(credential).then((value) async {
+            //   print(auth.currentUser!.uid);
+            //   GetStorage().write("phoneNumber", phoneNumber.text);
+            //   await FirebaseDatabase.instance.ref('users/${phoneNumber.text}').set({
+            //     "name": name,
+            //     "slotReserved": '',
+            //     "startTimeOfBooking": '',
+            //     'garageReserved':'',
+            //     'phoneNumber': phoneNumber.text,
+            //     'password': password,
+            //     'inGarage': false,
+            //     'isReservation': false,
+            //
+            //   }).then((value) {
+            //     Get.offAll(SwitchLogin());
+            //   });
+            //   print("You are logged in successfully");
+            // });
           },
           verificationFailed: (FirebaseAuthException e) {
             print(e.message);
@@ -67,11 +67,28 @@ class SignupController extends GetxController {
     }
   }
 
-  void verifyOTP() {
-     PhoneAuthProvider.credential(
+  Future<void> verifyOTP() async {
+    PhoneAuthCredential credential =    PhoneAuthProvider.credential(
         verificationId: verificationID,
         smsCode: otpController.text
     );
+    await auth.signInWithCredential(credential).then((value) async {
+      print(auth.currentUser!.uid);
+      GetStorage().write("phoneNumber", phoneNumber.text);
+      await FirebaseDatabase.instance.ref('users/${phoneNumber.text}').set({
+        "name": name,
+        "slotReserved": '',
+        "startTimeOfBooking": '',
+        'garageReserved':'',
+        'phoneNumber': phoneNumber.text,
+        'password': password,
+        'inGarage': false,
+        'isReservation': false,
 
+      }).then((value) {
+        Get.offAll(SwitchLogin());
+      });
+      print("You are logged in successfully");
+    });
   }
 }
