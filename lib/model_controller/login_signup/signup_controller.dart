@@ -33,7 +33,8 @@ class SignupController extends GetxController {
     //لتاكيد الفنكشن ان الكلام مكتوب بشكل مظبوط
     if (formState.currentState!.validate()) {
       auth.verifyPhoneNumber(
-          phoneNumber: phoneNumber.text,  timeout: const Duration(seconds: 60),
+          phoneNumber: phoneNumber.text,
+          timeout: const Duration(seconds: 60),
           verificationCompleted: (PhoneAuthCredential credential) async {
             await auth.signInWithCredential(credential).then((value) async {
               print(auth.currentUser!.uid);
@@ -66,7 +67,7 @@ class SignupController extends GetxController {
     }
   }
 
-  void verifyOTP() async {
+  void verifyOTP() {
      PhoneAuthProvider.credential(
         verificationId: verificationID,
         smsCode: otpController.text

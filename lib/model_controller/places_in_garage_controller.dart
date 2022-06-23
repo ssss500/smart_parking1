@@ -14,18 +14,16 @@ class PlacesInGarageController extends GetxController {
   var slotSelected = '';
   late SlotModel slotModel;
 
-
   // late int sensor1, sensor2;
 
   selectSlotFun(idSlot) {
     if (idSlot == 'A1'
-        ?slotModel.toJson()['A1']  == 'empty'
-        : slotModel.toJson()['A2'] == 'empty'
-    ) {
+        ? slotModel.toJson()['A1'] == 'empty'
+        : slotModel.toJson()['A2'] == 'empty') {
       slotSelected = idSlot;
       update();
       print(slotSelected);
-    }else{
+    } else {
       Get.snackbar(
         'Notes !',
         "You are not able to choose this place",
@@ -33,25 +31,27 @@ class PlacesInGarageController extends GetxController {
         backgroundColor: Colors.red.shade200,
       );
     }
-
   }
 
   @override
   onInit() async {
-   await listenFirebaseUser();
+    await listenFirebaseUser();
     super.onInit();
   }
+
 
   listenFirebaseUser() async {
     //to get data my garage as stream
     print('listenFirebaseUser');
     HomeController homeController = Get.put(HomeController());
+    print("homeController.serverTitleGarage : ${homeController.serverTitleGarage}");
     DatabaseReference starCountRef =
         await FirebaseDatabase.instance.ref(homeController.serverTitleGarage);
     await starCountRef.onValue.listen((DatabaseEvent event) {
       slotModel = SlotModel.fromJson(
           Map<String, dynamic>.from(event.snapshot.value as dynamic));
-print(slotModel);
+      print(slotModel);
+      print(slotModel);
       update();
     });
   }

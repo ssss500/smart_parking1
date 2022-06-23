@@ -14,8 +14,10 @@ import 'package:get_storage/get_storage.dart';
 
 //import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:smart_parking/model_controller/models/user_model.dart';
 import 'package:smart_parking/model_controller/places_in_garage_controller.dart';
+import 'package:smart_parking/view/widgets/custom_text.dart';
 import 'package:smart_parking/view/widgets/custom_text_field.dart';
 
 import 'directions_model.dart';
@@ -30,8 +32,7 @@ class HomeController extends GetxController {
   String serverTitleGarage = '';
 
   // my location var
-  double? myLatitude = null,
-      myLongitude = null;
+  double? myLatitude = null, myLongitude = null;
 
   String? titleParking, image;
   late int resultBetweenTowDates;
@@ -57,6 +58,12 @@ class HomeController extends GetxController {
   @override
   onInit() async {
     await listenFirebaseUser();
+    Timer.periodic(Duration(minutes: 1), (timer) {
+      if (userMode.toJson()['isReservation']) {
+        calculateBetweenTowDates();
+      }
+      print(DateTime.now());
+    });
 
 //   await addMyLocationInMarkers();
 
@@ -91,11 +98,11 @@ class HomeController extends GetxController {
         final dateNow = DateTime.now();
         final difference = dateNow
             .difference(DateTime.parse(
-            userMode.toJson()['startTimeOfBooking'] as String))
+                userMode.toJson()['startTimeOfBooking'] as String))
             .inHours;
         await FirebaseDatabase.instance
-            .ref('${userMode.toJson()['garageReserved']}').child(
-            userMode.toJson()['slotReserved'])
+            .ref('${userMode.toJson()['garageReserved']}')
+            .child(userMode.toJson()['slotReserved'])
             .get()
             .then((value) async {
           if (value.value == 'wait' && difference == 1) {
@@ -105,7 +112,7 @@ class HomeController extends GetxController {
       }
       //to get markers
       DatabaseReference markersFromFirebase =
-      await FirebaseDatabase.instance.ref('markers');
+          await FirebaseDatabase.instance.ref('markers');
       await markersFromFirebase.get().then((value) async {
         List listMarkers = value.value as List;
 
@@ -155,16 +162,18 @@ class HomeController extends GetxController {
             infoWindow: InfoWindow(
               title: listMarkers[i]['title'],
             ),
-            onTap: () {
+            onTap: () async {
               // Get directions
+
               if (!userMode.toJson()['isReservation']) {
-                getPolylines(
+                await getPolylines(
                     latitudeEnd: listMarkers[i]['latitude'],
                     longitudeEnd: listMarkers[i]['longitude'],
                     title: listMarkers[i]['title'],
                     serverTitle: listMarkers[i]['serverTitle'],
                     cost: listMarkers[i]['cost'],
                     image: listMarkers[i]['imageUrl']);
+                print("serverTitleGarage : " + serverTitleGarage);
               } else {
                 Get.snackbar(
                   'Note !',
@@ -215,8 +224,16 @@ class HomeController extends GetxController {
       builder: (BuildContext dialogContext) {
         return openGateDialog(
             onPressed: () async {
-              PlacesInGarageController places = Get.put(
-                  PlacesInGarageController());
+              Get.back();
+              PlacesInGarageController places =
+                  Get.put(PlacesInGarageController());
+              final startTime=userMode.startTimeOfBooking;
+              showDialog(
+                  context: Get.context!,
+                  //      barrierDismissible: barrierDismissible,
+                  builder: (BuildContext dialogContext) {
+                    return invoiceDialog(startTimef:startTime);
+                  });
 
               await FirebaseDatabase.instance
                   .ref('users/${GetStorage().read('phoneNumber')}')
@@ -229,22 +246,20 @@ class HomeController extends GetxController {
               });
               await FirebaseDatabase.instance
                   .ref(serverTitleGarage)
-                  .update({
-                'gate': 'open',
-                places.slotSelected: 'empty'
-                  });
-              Get.back();
-              Get.snackbar(
-                'Note !',
-                "The gate is open, please cross now ,amount has been deducted ${(resultBetweenTowDates *
-                    (costPerHour / 60)).toInt()} EGP",
-                snackPosition: SnackPosition.TOP,
-                backgroundColor: Colors.green.shade200,
-              );
+                  .update({'gate': 'open', places.slotSelected: 'empty'});
+              // Get.back();
+
+              // Get.snackbar(
+              //   'Note !',
+              //   "The gate is open, please cross now ,amount has been deducted ${(resultBetweenTowDates * (costPerHour / 60)).toInt()} EGP",
+              //   snackPosition: SnackPosition.TOP,
+              //   backgroundColor: Colors.green.shade200,
+              // );
               places.slotSelected = '';
 
-              update();
-            }, randomNumber: randomNumber);
+              // update();
+            },
+            randomNumber: randomNumber);
       },
     );
   }
@@ -265,29 +280,31 @@ class HomeController extends GetxController {
       context: Get.context!, //      barrierDismissible: barrierDismissible,
       // false = user must tap button, true = tap outside dialog
       builder: (BuildContext dialogContext) {
-        return openGateDialog(onPressed: () async {
-          PlacesInGarageController places = Get.put(PlacesInGarageController());
+        return openGateDialog(
+            onPressed: () async {
+              PlacesInGarageController places =
+                  Get.put(PlacesInGarageController());
 
-          await FirebaseDatabase.instance
-              .ref('users/${GetStorage().read('phoneNumber')}')
-              .update({
-            'inGarage': true,
-          });
-          await FirebaseDatabase.instance
-              .ref(serverTitleGarage)
-              .update({'gate': 'open'
-            // , places.slotSelected: 'full'
+              await FirebaseDatabase.instance
+                  .ref('users/${GetStorage().read('phoneNumber')}')
+                  .update({
+                'inGarage': true,
               });
-          Get.back();
-          Get.snackbar(
-            'Note !',
-            "The gate is open, please cross now to ${places.slotSelected}",
-            snackPosition: SnackPosition.TOP,
-            backgroundColor: Colors.green.shade200,
-          );
+              await FirebaseDatabase.instance.ref(serverTitleGarage).update({
+                'gate': 'open'
+                // , places.slotSelected: 'full'
+              });
+              Get.back();
+              Get.snackbar(
+                'Note !',
+                "The gate is open, please cross now to ${places.slotSelected}",
+                snackPosition: SnackPosition.TOP,
+                backgroundColor: Colors.green.shade200,
+              );
 
-          update();
-        }, randomNumber: randomNumber);
+              update();
+            },
+            randomNumber: randomNumber);
       },
     );
   }
@@ -331,7 +348,7 @@ class HomeController extends GetxController {
     final date2 = DateTime.now();
     final difference = date2
         .difference(
-        DateTime.parse(userMode.toJson()['startTimeOfBooking'] as String))
+            DateTime.parse(userMode.toJson()['startTimeOfBooking'] as String))
         .inMinutes;
     resultBetweenTowDates = difference;
     update();
@@ -354,7 +371,7 @@ class HomeController extends GetxController {
                 children: <TextSpan>[
                   TextSpan(
                     text:
-                    'To confirm entering the portal, repeat this number   ',
+                        'To confirm entering the portal, repeat this number   ',
                   ),
                   TextSpan(
                       text: randomNumber,
@@ -402,6 +419,92 @@ class HomeController extends GetxController {
                 backgroundColor: Colors.red.shade200,
               );
             }
+          },
+        ),
+      ],
+    );
+  }
+
+  invoiceDialog({startTimef}) {
+    final  DateTime now = DateTime.now();
+    final  DateTime format = DateTime.parse(startTimef);
+
+    final  String startTime = DateFormat("hh:mm").format(format);
+    final  String startDate = DateFormat("yyyy-MM-dd").format(format);
+
+    final  String dateNowFormat = DateFormat("yyyy-MM-dd").format(now);
+    final String timeNowFormat = DateFormat("hh:mm").format(now);
+    final result=resultBetweenTowDates;
+    final cost=costPerHour;
+    return AlertDialog(
+      title: Text('Note !'),
+      content: SizedBox(
+        height: 140,
+        width: MediaQuery.of(Get.context!).size.width,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CustomText(
+                text: 'Time to use the park : $result M',
+                alignment: Alignment.centerLeft,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              CustomText(
+                text: 'cost per hour : $cost EGP',
+                alignment: Alignment.centerLeft,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              CustomText(
+                text:
+                    'cost per hour * Time = ${(((result - 60) * (cost / 60)).toInt())}',
+                alignment: Alignment.centerLeft,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              CustomText(
+                text: 'Garage entry Date : ${startDate.toString()}',
+                alignment: Alignment.centerLeft,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              CustomText(
+                text: 'Garage entry time : ${startTime.toString()}',
+                alignment: Alignment.centerLeft,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              CustomText(
+                text: 'Date to go out : $dateNowFormat',
+                alignment: Alignment.centerLeft,
+              ),
+              SizedBox(
+                height: 4,
+              ),
+              CustomText(
+                text: 'Time to go out : $timeNowFormat',
+                alignment: Alignment.centerLeft,
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: <Widget>[
+        MaterialButton(
+          child: Text(
+            'Done',
+            style: TextStyle(color: Colors.green),
+          ),
+          onPressed: () {
+            Get.back();
           },
         ),
       ],

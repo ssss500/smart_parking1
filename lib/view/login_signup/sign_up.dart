@@ -9,8 +9,17 @@ import 'package:smart_parking/view/widgets/custom_buttom.dart';
 import 'package:smart_parking/view/widgets/custom_text.dart';
 import 'package:smart_parking/view/widgets/custom_text_field.dart';
 
-class SignUpView extends StatelessWidget {
+import '../../privacy_&_policy.dart';
+
+class SignUpView extends StatefulWidget {
+  @override
+  State<SignUpView> createState() => _SignUpViewState();
+}
+
+class _SignUpViewState extends State<SignUpView> {
   SignupController signupController = Get.put(SignupController());
+
+  bool value = false;
 
   @override
   Widget build(BuildContext context) {
@@ -78,22 +87,20 @@ class SignUpView extends StatelessWidget {
                         },
                       ),
                       //password
-                  GetBuilder<SignupController>(
-
-                        builder:(c)=> CustomTextField(
+                      GetBuilder<SignupController>(
+                        builder: (c) => CustomTextField(
                           title: TextString.passwordString,
                           hint: '********',
                           textInputType: TextInputType.visiblePassword,
                           onChanged: (c) {
                             signupController.password = c;
                           },
-                          obscureText:!c.showPassword,
+                          obscureText: !c.showPassword,
                           iconButton: IconButton(
                             onPressed: () {
-                              c.showPassword=!c.showPassword;
+                              c.showPassword = !c.showPassword;
                               c.update();
                             },
-
                             icon: c.showPassword
                                 ? const Icon(Icons.visibility)
                                 : const Icon(Icons.visibility_off),
@@ -111,10 +118,43 @@ class SignUpView extends StatelessWidget {
                       ),
                       const SizedBox(
                         height: 35,
-                      ), //create account button
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Checkbox(
+                              value: value,
+                              onChanged: (value) =>
+                                  setState(() => this.value = value!)),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const Policy()));
+                            },
+                            child: const Text(
+                              "privacy & policy",
+                              style: TextStyle(fontSize: 18),
+                            ),
+                          )
+                        ],
+                      ),//
+                      const SizedBox(
+                        height: 20,
+                      ),// create account button
                       CustomButton(
                         function: () {
-                          signupController.singUp();
+                          if(value){
+                            signupController.singUp();
+                          }else{
+                            Get.snackbar(
+                              'Notes !',
+                              "You must agree to me privacy & policy",
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.red.shade200,
+                            );
+                          }
                         },
                         text: TextString.createAccountString,
                       ),

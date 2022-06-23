@@ -152,95 +152,123 @@ Widget bottomSheet() {
       padding: const EdgeInsets.only(left: 8.0, right: 8, top: 8),
       child: Column(
         children: [
-          Row(
-            children: [
-              Container(
-                height: 110,
-                width: 110,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    image: DecorationImage(
-                      fit: BoxFit.cover,
-                      image: NetworkImage(c.image!),
-                    )),
-              ),
-              Container(
-                height: 110,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 5.0,top: 5),
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        CustomText(
-                          text: c.titleParking!,
-                          color: Colors.black,
-                          fontSize: 23,
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        c.userMode.toJson()['isReservation']?   Padding(
-                          padding: const EdgeInsets.only(left:8.0),
-                          child: RichText(
-                            text: new TextSpan(
-                              // Note: Styles for TextSpans must be explicitly defined.
-                              // Child text spans will inherit styles from parent
-                              style: new TextStyle(
-                                fontSize: 17.0,
-                                color: Colors.black,
-                              ),
-                              children: <TextSpan>[
-                                new TextSpan(text: 'Your slot is   ',style: new TextStyle(color: primaryColor)),
-
-                                new TextSpan(text: places.slotSelected, style: new TextStyle(fontWeight: FontWeight.bold,color: Colors.red)),
-                              ],
-                            ),
-                          ),
-                        ):SizedBox(),
-
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child: CustomText(
-                            text:
-                                '${c.info?.totalDistance}, ${c.info?.totalDuration}',
-                            color: primaryColor,
-                            fontSize: 14,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
-                          child:c.userMode.toJson()['isReservation']? CustomText(
-                            text: 'will be paid ${(c.resultBetweenTowDates* (c.costPerHour/60)).toInt()} EGP',
-                            color: primaryColor,
-                            fontSize: 14,
-                          ):CustomText(
-                            text: '${c.costPerHour} EGP / h ',
-                            color: primaryColor,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SizedBox(
+              width: MediaQuery.of(Get.context!).size.width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 110,
+                    width: 110,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        image: DecorationImage(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(c.image!),
+                        )),
                   ),
-                ),
-              )
-            ],
+                  Container(
+                    height: 110,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 5.0,top: 5),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            CustomText(
+                              text: c.titleParking!,
+                              color: Colors.black,
+                              fontSize: 23,
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            c.userMode.toJson()['isReservation']?   Padding(
+                              padding: const EdgeInsets.only(left:8.0),
+                              child: RichText(
+                                text: new TextSpan(
+                                  // Note: Styles for TextSpans must be explicitly defined.
+                                  // Child text spans will inherit styles from parent
+                                  style: new TextStyle(
+                                    fontSize: 17.0,
+                                    color: Colors.black,
+                                  ),
+                                  children: <TextSpan>[
+                                    new TextSpan(text: 'Your slot is   ',style: new TextStyle(color: primaryColor)),
+
+                                    new TextSpan(text: places.slotSelected, style: new TextStyle(fontWeight: FontWeight.bold,color: Colors.red)),
+                                  ],
+                                ),
+                              ),
+                            ):SizedBox(),
+
+                            SizedBox(
+                              height: 8,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: CustomText(
+                                text:
+                                    '${c.info?.totalDistance}, ${c.info?.totalDuration}',
+                                color: primaryColor,
+                                fontSize: 14,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 7.0),
+                              child:c.userMode.toJson()['isReservation']? Column(
+                                children: [
+                                  CustomText(
+                                    
+                                    text:c.resultBetweenTowDates==null?"Loading": 'will be paid ${(((c.resultBetweenTowDates-60)* (c.costPerHour/60)).toInt())} EGP & stay time is ${c.resultBetweenTowDates} M',
+                                    // text: 'will be paid ${(((c.resultBetweenTowDates-60)* (c.costPerHour/60)).toInt())>0?((c.resultBetweenTowDates* (c.costPerHour/60)-60).toInt()):0} EGP & stay time is ${c.resultBetweenTowDates} M',
+                                    color: primaryColor,
+                                    fontSize: 12,
+                                  ),
+
+                                ],
+                              ):CustomText(
+                                text: '${c.costPerHour} EGP / h ',
+                                color: primaryColor,
+                                fontSize: 14,
+                              ),
+                            ),
+                            // StreamBuilder(
+                            //   stream: FirebaseDatabase.instance.reactive(''),
+                            //   builder: (context, snapshot) {
+                            //     return Padding(
+                            //       padding: const EdgeInsets.only(left: 8.0,top: 6),
+                            //       child: CustomText(
+                            //         text: '${c.costPerHour} EGP / h ',
+                            //         color: primaryColor,
+                            //         fontSize: 14,
+                            //       ),
+                            //     );
+                            //   }
+                            // ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
           SizedBox(
             height: 20,
           ),
           !c.userMode.toJson()['isReservation']
               ? CustomButton(
-                  function: () {
-//                    c.listenFirebaseUser();
+                  function: () async {
+                  await places.listenFirebaseUser();
+
                     places.slotSelected='';
                     Get.to(() => PlacesInGarageView());
                   },
@@ -249,6 +277,12 @@ Widget bottomSheet() {
               : c.userMode.toJson()['inGarage']
                   ? CustomButton(
                       function: () async {
+                        // showDialog(
+                        //     context: Get.context!,
+                        //     //      barrierDismissible: barrierDismissible,
+                        //     builder: (BuildContext dialogContext) {
+                        //       return c.invoiceDialog();
+                        //     });
                         c.openGateToExit();
                       },
                       text: 'Open the gate to exit',

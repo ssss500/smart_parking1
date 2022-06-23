@@ -13,7 +13,7 @@ class CreditCardForm extends StatefulWidget {
     required this.cardHolderName,
     required this.cvvCode,
     this.obscureCvv = false,
-    this.obscureNumber = false,
+    this.obscureNumber = true,
     required this.onCreditCardModelChange,
     required this.themeColor,
     this.textColor = Colors.black,

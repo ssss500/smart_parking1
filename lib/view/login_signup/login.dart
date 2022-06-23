@@ -63,13 +63,15 @@ class LoginView extends StatelessWidget {
       child: Column(
         children: [
           CustomTextField(
+            controller: loginController.phoneNumber,
             title: TextString.phoneNumberString,
-            hint: '0101234567',
+            hint: '+20101234567',
             textInputType: TextInputType.phone,
             autoFillHints: const [AutofillHints.telephoneNumber],
-            onChanged: (c) {
-              loginController.phoneNumber = c;
-            },
+
+            // onChanged: (c) {
+            //   loginController.phoneNumber = c;
+            // },
             iconData: Icons.phone,
             validator: (value) {
               if (value!.length > 13) {
@@ -84,23 +86,34 @@ class LoginView extends StatelessWidget {
           const SizedBox(
             height: 20,
           ),
-          CustomTextField(
-            title: TextString.passwordString,
-            hint: '********',
-            textInputType: TextInputType.visiblePassword,
-            onChanged: (c) {
-              loginController.password = c;
-            },
-            iconData: Icons.password,
-            validator: (value) {
-              if (value!.length > 30) {
-                return "the password can`t to be larger than 15 letters";
-              }
-              if (value.length < 5) {
-                return "the password can`t to be less than 5 letters";
-              }
-              return null;
-            },
+          GetBuilder<LoginController>(
+            builder: (c) => CustomTextField(
+              title: TextString.passwordString,
+              hint: '********',
+              textInputType: TextInputType.visiblePassword,
+              onChanged: (c) {
+                loginController.password = c;
+              },
+              obscureText: !c.showPassword,
+              iconButton: IconButton(
+                onPressed: () {
+                  c.showPassword = !c.showPassword;
+                  c.update();
+                },
+                icon: c.showPassword
+                    ? const Icon(Icons.visibility)
+                    : const Icon(Icons.visibility_off),
+              ),
+              validator: (value) {
+                if (value!.length > 30) {
+                  return "the password can`t to be larger than 15 letters";
+                }
+                if (value.length < 5) {
+                  return "the password can`t to be less than 5 letters";
+                }
+                return null;
+              },
+            ),
           ),
           const SizedBox(
             height: 30,

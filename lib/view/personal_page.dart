@@ -16,7 +16,7 @@ class PersonalPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('about'),centerTitle: true,backgroundColor: primaryColor,),
+      appBar: AppBar(title: Text('Log Out'),centerTitle: true,backgroundColor: primaryColor,),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,

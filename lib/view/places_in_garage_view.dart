@@ -40,75 +40,77 @@ class _PlacesInGarageViewState extends State<PlacesInGarageView> {
           height: double.infinity,
           width: double.infinity,
           color: Colors.white,
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  ListCarParking(true, 'A1'),
-                  Expanded(
-                      flex: 7,
-                      child: SizedBox(
-                        height: MediaQuery.of(Get.context!).size.height - 200,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            RotatedBox(
-                              quarterTurns: -1,
-                              child: CustomText(
-                                text: 'The Passage',
-                                fontSize: 30,
-                                color: Colors.black45,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 50,
-                            ),
-                            RotatedBox(
-                              quarterTurns: 1,
-                              child: Opacity(
-                                opacity: 0.5,
-                                child: Image(
-                                  image: AssetImage('assets/image/car.png'),
-                                  height: 70,
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    ListCarParking(true, 'A1'),
+                    Expanded(
+                        flex: 7,
+                        child: SizedBox(
+                          height: MediaQuery.of(Get.context!).size.height - 200,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              RotatedBox(
+                                quarterTurns: -1,
+                                child: CustomText(
+                                  text: 'The Passage',
+                                  fontSize: 30,
+                                  color: Colors.black45,
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            Icon(
-                              Icons.arrow_upward,
-                              color: Colors.black45,
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            CustomText(
-                              text: 'ENTRY',
-                              color: Colors.black45,
-                            )
-                          ],
-                        ),
-                      )),
-                  ListCarParking(false, 'A2'),
-                ],
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 15.0, right: 15),
-                child: CustomButton(
-                  function: () {
-                    PlacesInGarageController controller =
-                        Get.put(PlacesInGarageController());
-                    controller.bookNowFun();
-                  },
-                  text: 'book now',
+                              SizedBox(
+                                height: 50,
+                              ),
+                              RotatedBox(
+                                quarterTurns: 1,
+                                child: Opacity(
+                                  opacity: 0.5,
+                                  child: Image(
+                                    image: AssetImage('assets/image/car.png'),
+                                    height: 70,
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              Icon(
+                                Icons.arrow_upward,
+                                color: Colors.black45,
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              CustomText(
+                                text: 'ENTRY',
+                                color: Colors.black45,
+                              )
+                            ],
+                          ),
+                        )),
+                    ListCarParking(false, 'A2'),
+                  ],
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 30,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 15.0, right: 15),
+                  child: CustomButton(
+                    function: () {
+                      PlacesInGarageController controller =
+                          Get.put(PlacesInGarageController());
+                      controller.bookNowFun();
+                    },
+                    text: 'book now',
+                  ),
+                ),
+              ],
+            ),
           ),
         ));
   }

@@ -48,6 +48,7 @@ dependencies:
   geolocator: ^8.2.1
   get_storage: ^2.0.3
   cupertino_icons: ^1.0.4
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

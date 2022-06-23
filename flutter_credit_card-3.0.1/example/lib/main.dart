@@ -21,6 +21,7 @@ class MySampleState extends State<MySample> {
   bool isCvvFocused = false;
   bool useGlassMorphism = false;
   bool useBackgroundImage = false;
+  bool showPassword = true;
   OutlineInputBorder? border;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -95,7 +96,7 @@ class MySampleState extends State<MySample> {
                         CreditCardForm(
                           formKey: formKey,
                           obscureCvv: true,
-                          obscureNumber: true,
+                          obscureNumber: showPassword,
                           cardNumber: cardNumber,
                           cvvCode: cvvCode,
                           isHolderNameVisible: true,
@@ -112,6 +113,16 @@ class MySampleState extends State<MySample> {
                             labelStyle: const TextStyle(color: Colors.white),
                             focusedBorder: border,
                             enabledBorder: border,
+                            suffixIcon: IconButton(
+                              onPressed: (){
+                                showPassword=!showPassword;
+                                setState((){});
+                              },
+                              icon: showPassword
+                                  ? const Icon(Icons.visibility)
+                                  : const Icon(Icons.visibility_off),
+                              color: const Color(0xff43a5c8 ),
+                            ),
                           ),
                           expiryDateDecoration: InputDecoration(
                             hintStyle: const TextStyle(color: Colors.white),

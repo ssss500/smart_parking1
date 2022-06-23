@@ -11,18 +11,19 @@ import '../../main.dart';
 import '../../switch_login.dart';
 
 class LoginController extends GetxController {
-  late String phoneNumber = '', password = '';
-
+  late String  password = '';
+  TextEditingController phoneNumber =TextEditingController(text: '+2');
+  bool showPassword=false;
   GlobalKey<FormState> formState = GlobalKey<FormState>();
 
   loginFun() async {
     if (formState.currentState!.validate()) {
       //Verify the password
       DatabaseReference starCountRef =
-          await FirebaseDatabase.instance.ref('users/$phoneNumber/password');
+          await FirebaseDatabase.instance.ref('users/${phoneNumber.text}/password');
       starCountRef.get().then((value) {
         if (password ==  value.value) {
-          GetStorage().write('phoneNumber', phoneNumber);
+          GetStorage().write('phoneNumber', phoneNumber.text);
           Get.offAll(SwitchLogin());
 
         } else {
