@@ -166,12 +166,13 @@ class HomeController extends GetxController {
               // Get directions
 
               if (!userMode.toJson()['isReservation']) {
+
                 await getPolylines(
                     latitudeEnd: listMarkers[i]['latitude'],
                     longitudeEnd: listMarkers[i]['longitude'],
                     title: listMarkers[i]['title'],
                     serverTitle: listMarkers[i]['serverTitle'],
-                    cost: listMarkers[i]['cost'],
+                    cost:listMarkers[i]['cost'].runtimeType == int ?listMarkers[i]['cost']: int.parse(listMarkers[i]['cost'].toString()),
                     image: listMarkers[i]['imageUrl']);
                 print("serverTitleGarage : " + serverTitleGarage);
               } else {

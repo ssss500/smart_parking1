@@ -527,17 +527,14 @@ class _CreditCardWidgetState extends State<CreditCardWidget>
   }
 
   Widget getCardTypeImage(CardType? cardType) {
-    final List<CustomCardTypeIcon> customCardTypeIcon = getCustomCardTypeIcon(cardType!);
-    if(customCardTypeIcon.isNotEmpty){
-      return customCardTypeIcon.first.cardImage;
-    } else {
+
       return Image.asset(
-        CardTypeIconAsset[cardType]!,
+        'mastercard',
         height: 48,
         width: 48,
         package: 'flutter_credit_card',
       );
-    }
+
   }
 
     // This method returns the icon for the visa card type if found
