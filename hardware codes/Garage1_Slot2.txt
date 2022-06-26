@@ -1,0 +1,90 @@
+
+
+#include <ESP8266WiFi.h>
+#include <WiFiClient.h>
+#include <FirebaseArduino.h>
+// Set these to run example.
+
+#define FIREBASE_HOST "school-472b3-default-rtdb.firebaseio.com"
+#define FIREBASE_AUTH "jiNz9frsufZsx0pBTU25yUqJSmVe4lIwne74iosQ"
+#define WIFI_SSID "Hoss"
+#define WIFI_PASSWORD "Hossam2210"
+#define TRIGGER_PIN D5
+#define ECHO_PIN D6
+#define LED D7
+int DISTANCE =0, DURATION=0;
+
+void setup() {
+  Serial.begin(9600);
+
+  // connect to wifi.
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  Serial.print("connecting");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print(".");
+    delay(500);
+  }
+  Serial.println();
+  Serial.print("connected: ");
+  Serial.println(WiFi.localIP());
+  
+  Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
+  delay(1000);
+  
+  pinMode(TRIGGER_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  pinMode(LED, OUTPUT);
+}
+
+void loop(){ 
+  //Firebase.getInt("LED_STATUS");
+  digitalWrite(TRIGGER_PIN, LOW);
+  delayMicroseconds(2);
+  
+  digitalWrite(TRIGGER_PIN, HIGH);
+  delayMicroseconds(10);
+  
+  digitalWrite(TRIGGER_PIN, LOW);
+  DURATION = pulseIn(ECHO_PIN, HIGH);
+  DISTANCE = (DURATION/2) / 29.1;
+  String data1 = Firebase.getString("firstGarage/A2");
+  if (DISTANCE <= 7){ 
+    Serial.println("Led Turned ON");
+    digitalWrite(LED,HIGH);
+    
+    Firebase.setString("firstGarage/A2", "full");
+    // handle error
+    if (Firebase.failed()) {
+        Serial.print("setting /number failed:");
+        Serial.println(Firebase.error());  
+        return;
+    }
+  }
+  
+  else if (data1 == "wait") {
+    Serial.println("Led Turned off");
+    digitalWrite(LED,LOW);
+    Firebase.setString("firstGarage/A2", "wait");
+    // handle error
+    if (Firebase.failed()) {
+        Serial.print("setting /number failed:");
+        Serial.println(Firebase.error());  
+        return;
+    }
+  }
+  else {
+        Serial.println("Led Turned off");
+    digitalWrite(LED,LOW);
+    Firebase.setString("firstGarage/A2", "empty");
+    // handle error
+    if (Firebase.failed()) {
+        Serial.print("setting /number failed:");
+        Serial.println(Firebase.error());  
+        return;
+  }
+  }
+  Serial.print("Distance = ");
+  Serial.print(DISTANCE);
+  Serial.println(" cm");
+  delay(500);
+}
